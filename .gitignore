@@ -21,5 +21,8 @@ share/python-wheels/
 *.egg
 MANIFEST
 
+# Portfolio
+Portfolios/*
+
 # Cline
 .clinerules/*
