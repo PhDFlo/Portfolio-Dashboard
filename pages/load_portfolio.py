@@ -1,28 +1,48 @@
 import streamlit as st
 import pandas as pd
+import os
 import datetime
-from .utils import (
+from dashboard.utils import (
     load_portfolio_data,
+    load_portfolio_from_file,
     update_portfolio_from_dataframe,
     save_portfolio_to_file,
+    get_portfolio_files,
 )
 
-# Configure page
-st.set_page_config(
-    page_title="Security Portfolio Optimizer",
-    page_icon="📊",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
 
-st.header("Portfolio Management")
+# Sidebar for file operations
+with st.sidebar:
+    st.header("Portfolio Files")
+
+    # File selection
+    portfolio_files = get_portfolio_files()
+    file_options = [""] + [os.path.basename(f) for f in portfolio_files]
+
+    selected_file = st.selectbox(
+        "Select Portfolio JSON",
+        options=file_options,
+        index=1
+        if len(file_options) > 1 and "investment_example.json" in file_options
+        else 0,
+    )
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("🔄 Refresh"):
+            st.rerun()
+
+    with col2:
+        if st.button("📂 Load") and selected_file:
+            load_portfolio_from_file(f"./Portfolios/{selected_file}")
+            st.rerun()
 
 # Display current portfolio in editable table
 if st.session_state.portfolio.securities:
-    df = load_portfolio_data(st.session_state.portfolio)
+    st.session_state.df = load_portfolio_data(st.session_state.portfolio)
 else:
     # Create empty dataframe with proper structure
-    df = pd.DataFrame(
+    st.session_state.df = pd.DataFrame(
         {
             "Name": [""],
             "Ticker": [""],
@@ -36,8 +56,8 @@ else:
     )
 st.subheader("Security List")
 
-edited_df = st.data_editor(
-    df,
+st.session_state.edited_df = st.data_editor(
+    st.session_state.df,
     num_rows="dynamic",
     use_container_width=True,
     column_config={
@@ -55,8 +75,8 @@ edited_df = st.data_editor(
     key="portfolio_editor",
 )
 # Update portfolio if data was edited
-if not edited_df.equals(df):
-    update_portfolio_from_dataframe(edited_df)
+if not st.session_state.edited_df.equals(st.session_state.df):
+    update_portfolio_from_dataframe(st.session_state.edited_df)
 
 # Action buttons
 col1, col2 = st.columns(2)

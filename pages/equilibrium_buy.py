@@ -3,19 +3,10 @@ from foliotrack.Equilibrate import solve_equilibrium
 import pandas as pd
 import datetime
 import os
-from .utils import update_portfolio_from_dataframe
+from dashboard.utils import update_portfolio_from_dataframe
 
-# Configure page
-st.set_page_config(
-    page_title="Security Portfolio Optimizer",
-    page_icon="📊",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-
-st.header("Portfolio Optimization & Trading")
 # Optimization parameters
-st.subheader("Optimization Parameters")
+st.subheader("Optimization")
 col1, col2 = st.columns(2)
 with col1:
     new_investment = st.number_input(
@@ -29,18 +20,21 @@ with col2:
         max_value=1.0,
         format="%.2f",
     )
+
 # Optimization button and results
 if st.button("🎯 Optimize Portfolio", use_container_width=True):
     try:
         # Update portfolio from current data
-        update_portfolio_from_dataframe(edited_df)
+        update_portfolio_from_dataframe(st.session_state.edited_df)
         st.session_state.portfolio.compute_actual_shares()
+
         # Run optimization
         solve_equilibrium(
             st.session_state.portfolio,
             investment_amount=float(new_investment),
             min_percent_to_invest=float(min_percent),
         )
+
         # Display results
         info = st.session_state.portfolio.get_portfolio_info()
         equilibrium_data = []
@@ -58,38 +52,34 @@ if st.button("🎯 Optimize Portfolio", use_container_width=True):
                     "Number to buy": security_info.get("number_to_buy"),
                 }
             )
-        equilibrium_df = pd.DataFrame(equilibrium_data)
-        st.subheader("Equilibrium Portfolio Results")
-        st.dataframe(
-            equilibrium_df,
-            use_container_width=True,
-            column_config={
-                "Price": st.column_config.NumberColumn("Price", format="%.4f"),
-                "Target Share": st.column_config.NumberColumn(
-                    "Target Share", format="%.4f"
-                ),
-                "Actual Share": st.column_config.NumberColumn(
-                    "Actual Share", format="%.4f"
-                ),
-                "Final Share": st.column_config.NumberColumn(
-                    "Final Share", format="%.4f"
-                ),
-                "Amount to Invest": st.column_config.NumberColumn(
-                    "Amount to Invest", format="%.2f"
-                ),
-                "Number to buy": st.column_config.NumberColumn(
-                    "Number to buy", format="%.0f"
-                ),
-            },
-        )
-        # Store equilibrium results in session state
-        st.session_state.equilibrium_results = equilibrium_df
+        st.session_state.equilibrium_df = pd.DataFrame(equilibrium_data)
+
     except Exception as e:
         st.error(f"Error during optimization: {str(e)}")
-# Display stored equilibrium results if available
-if "equilibrium_results" in st.session_state:
-    st.subheader("Current Equilibrium Results")
-    st.dataframe(st.session_state.equilibrium_results, use_container_width=True)
+
+
+if "equilibrium_df" in st.session_state:
+    st.dataframe(
+        st.session_state.equilibrium_df,
+        use_container_width=True,
+        column_config={
+            "Price": st.column_config.NumberColumn("Price", format="%.4f"),
+            "Target Share": st.column_config.NumberColumn(
+                "Target Share", format="%.4f"
+            ),
+            "Actual Share": st.column_config.NumberColumn(
+                "Actual Share", format="%.4f"
+            ),
+            "Final Share": st.column_config.NumberColumn("Final Share", format="%.4f"),
+            "Amount to Invest": st.column_config.NumberColumn(
+                "Amount to Invest", format="%.2f"
+            ),
+            "Number to buy": st.column_config.NumberColumn(
+                "Number to buy", format="%.0f"
+            ),
+        },
+    )
+
 # Security purchase section
 st.subheader("Buy Security")
 col1, col2, col3 = st.columns(3)
@@ -114,6 +104,7 @@ with col3:
             st.success(f"Bought {quantity} unit(s) of {ticker_input} at {buy_price}")
         except Exception as e:
             st.error(f"Error buying security: {str(e)}")
+
 # Export section
 st.subheader("Export Staged Purchases")
 col1, col2 = st.columns([3, 1])
