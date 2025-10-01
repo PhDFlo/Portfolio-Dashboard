@@ -23,16 +23,16 @@ To run the Security Portfolio Optimizer, you need to have Python 3.12 or later i
    cd Portfolio-Dashboard
    ```
 
-2. Create a virtual environment and activate it:
+2. Create a virtual environment with [uv](https://github.com/astral-sh/uv) and activate it:
 
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+   uv venv
+   source .venv/bin/activate
    ```
 
 3. Install the dependencies:
    ```bash
-   pip install -r requirements.txt
+   uv sync
    ```
 
 ## Usage
@@ -52,7 +52,3 @@ This project is licensed under the Apache License, Version 2.0. See the [LICENSE
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
-
-## Contact
-
-For any questions or feedback, please contact [Your Name] at [your.email@example.com].
