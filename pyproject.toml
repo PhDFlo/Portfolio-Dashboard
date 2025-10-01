@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "foliotrack",
+    "plotly>=6.3.0",
     "streamlit>=1.50.0",
 ]
 

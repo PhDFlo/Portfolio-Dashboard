@@ -28,13 +28,21 @@ equil = st.Page(
     icon="⚖️",
 )
 
+compare = st.Page(
+    "pages/compare_securities.py",
+    title="Compare Securities",
+    icon="🔄",
+)
+
 pg = st.navigation(
     {
         "Manage": [
             load,
             equil,
         ],
-        "Tools": [],
+        "Tools": [
+            compare,
+        ],
     }
 )
 
