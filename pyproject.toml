@@ -1,9 +1,9 @@
 [project]
 name = "portfolio-dashboard"
 version = "0.0.1"
-description = "Add your description here"
+description = "The Security Portfolio Optimizer is a web application built with Streamlit that allows users to manage and optimize their security portfolios. The application provides tools for loading and updating portfolios, calculating equilibrium, buying securities, and exporting portfolio data."
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
     "foliotrack",
     "plotly>=6.3.0",
