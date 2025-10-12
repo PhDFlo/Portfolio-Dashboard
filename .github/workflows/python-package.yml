@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  SKIP_SMOKE: true
-
 jobs:
   streamlit:
     runs-on: ubuntu-latest

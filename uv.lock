@@ -301,7 +301,7 @@ wheels = [
 [[package]]
 name = "foliotrack"
 version = "0.0.4"
-source = { registry = "https://pypi.org/simple" }
+source = { directory = "../foliotrack" }
 dependencies = [
     { name = "cvxpy" },
     { name = "ecbdata" },
@@ -311,9 +311,16 @@ dependencies = [
     { name = "pytest" },
     { name = "yfinance" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/9d/b2/c8429d9304d6423cd93d389f7140b9d1e7afb68bc0656d5d69f2711e5aa7/foliotrack-0.0.4.tar.gz", hash = "sha256:076bbe52b6105540270b101103feb89bca8c5da4d526fb6ea492aaf536eb59bf", size = 22313, upload-time = "2025-10-01T17:54:54.911Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a0/51/170293663c6844e7bd860d1333d2701c01f2bf4638b8c6b7150f887043a7/foliotrack-0.0.4-py3-none-any.whl", hash = "sha256:8400b9c0a738bbb56b17d6a50439aad2ef2ffb6a78124bd69192c5b7fb85c2eb", size = 23064, upload-time = "2025-10-01T17:54:54.159Z" },
+
+[package.metadata]
+requires-dist = [
+    { name = "cvxpy" },
+    { name = "ecbdata" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "pyscipopt" },
+    { name = "pytest" },
+    { name = "yfinance" },
 ]
 
 [[package]]
@@ -811,7 +818,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "foliotrack" },
+    { name = "foliotrack", directory = "../foliotrack" },
     { name = "plotly", specifier = ">=6.3.0" },
     { name = "pytest", specifier = ">=8.4.2" },
     { name = "streamlit", specifier = ">=1.50.0" },

@@ -9,6 +9,7 @@ from dashboard.utils import (
     save_portfolio_to_file,
     get_portfolio_files,
 )
+from foliotrack.Portfolio import Portfolio
 
 
 # Sidebar for file operations
@@ -38,6 +39,10 @@ with st.sidebar:
             st.rerun()
 
 # Display current portfolio in editable table
+if "portfolio" not in st.session_state:
+    # Ensure a portfolio object exists in session state for pages run standalone
+    st.session_state.portfolio = Portfolio()
+
 if st.session_state.portfolio.securities:
     st.session_state.df = load_portfolio_data(st.session_state.portfolio)
 else:
