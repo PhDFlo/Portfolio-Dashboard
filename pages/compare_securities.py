@@ -4,53 +4,52 @@ import plotly.graph_objects as go
 from dashboard.security_comparator import (
     simulate_contract,
     compute_after_tax_curve,
-    parse_contract_arg,
+    create_contract_form,
 )
 
 st.subheader("Compare Securities")
 
 st.sidebar.header("Contract Details")
-initial = st.sidebar.number_input("Initial Investment", value=10000.0)
-annual_return = st.sidebar.number_input("Annual Return (e.g. 0.06 for 6%)", value=0.06)
 years = st.sidebar.number_input("Number of Years", value=30, min_value=1)
-yearly_contribution = st.sidebar.number_input("Yearly Contribution", value=0.0)
 
 contracts = []
 
 col1, col2 = st.columns(2)
 with col1:
-    st.subheader("Contract 1")
-    label = st.text_input("Label 1", value="Contract 1")
-    security_fee = st.number_input("Security Fee 1 (e.g. 0.005 for 0.5%)", value=0.005)
-    bank_fee = st.number_input("Bank Fee 1 (e.g. 0.005 for 0.5%)", value=0.005)
-    capgains_tax = st.number_input(
-        "Capital Gains Tax 1 (e.g. 0.30 for 30%)", value=0.30
+    contracts.append(
+        create_contract_form(
+            st,
+            "A",
+            default_label="PEA",
+            default_annual_return=0.06,
+            default_capgains_tax=0.172,
+        )
     )
-    contracts.append(f"{label},{security_fee},{bank_fee},{capgains_tax}")
+
 with col2:
-    st.subheader("Contract 2")
-    label = st.text_input("Label 2", value="Contract 2")
-    security_fee = st.number_input("Security Fee 2 (e.g. 0.005 for 0.5%)", value=0.005)
-    bank_fee = st.number_input("Bank Fee 2 (e.g. 0.005 for 0.5%)", value=0.005)
-    capgains_tax = st.number_input(
-        "Capital Gains Tax 2 (e.g. 0.30 for 30%)", value=0.30
+    contracts.append(
+        create_contract_form(
+            st,
+            "B",
+            default_label="CTO",
+            default_annual_return=0.08,
+            default_capgains_tax=0.30,
+        )
     )
-    contracts.append(f"{label},{security_fee},{bank_fee},{capgains_tax}")
 
 if st.button("Compare"):
     series_list = []
     invested_list = []
     after_tax_curves = []
     labels = []
-    for contract_str in contracts:
-        contract = parse_contract_arg(contract_str)
+    for contract in contracts:
         series, invested = simulate_contract(
-            initial=initial,
-            annual_return=annual_return,
+            initial=contract["initial"],
+            annual_return=contract["annual_return"],
             years=years,
             security_fee=contract["security_fee"],
             bank_fee=contract["bank_fee"],
-            yearly_contribution=yearly_contribution,
+            yearly_contribution=contract["yearly_investment"],
         )
         after_tax_curve = compute_after_tax_curve(
             series, invested, contract["capgains_tax"]
