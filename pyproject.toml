@@ -7,6 +7,7 @@ requires-python = ">=3.11"
 dependencies = [
     "foliotrack",
     "plotly>=6.3.0",
+    "pytest>=8.4.2",
     "streamlit>=1.50.0",
 ]
 

@@ -26,3 +26,6 @@ Portfolios/*
 
 # Cline
 .clinerules/*
+
+# VS Code
+.vscode/*
