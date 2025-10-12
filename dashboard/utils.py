@@ -1,7 +1,6 @@
 import streamlit as st
 from foliotrack.Security import Security
 from foliotrack.Portfolio import Portfolio
-from foliotrack.Equilibrate import solve_equilibrium
 import pandas as pd
 import os
 import glob
