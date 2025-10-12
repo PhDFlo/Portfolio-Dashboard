@@ -52,7 +52,6 @@ jobs:
         # This part is also where you can pass other options, for example:
         prettier_options: --write **/*.md
 
-    - name: Streamlit test
-      uses: streamlit/streamlit-app-action@v0.0.3
-      with:
-        app-path: dashboard.py
+    - name: Pytest
+      run: | 
+        uv run pytest
