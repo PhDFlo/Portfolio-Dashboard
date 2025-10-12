@@ -26,6 +26,10 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - uses: streamlit/streamlit-app-action@v0.0.3
+      with:
+        app-path: dashboard.py
+
     - name: Install uv
       uses: astral-sh/setup-uv@v6
       with:

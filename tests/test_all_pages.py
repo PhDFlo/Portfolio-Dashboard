@@ -29,7 +29,6 @@ class TestMultiPageApp(unittest.TestCase):
 
         for filename in pages:
             with self.subTest(filename=filename):
-                os.chdir(str(Path(__file__).parent.parent))
                 # Initialize the app test with the main app
                 at = AppTest.from_file("dashboard.py").run()
 
