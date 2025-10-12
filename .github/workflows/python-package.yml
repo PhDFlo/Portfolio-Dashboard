@@ -1,7 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
-name: Check Portfolio-Dashboard
+name: Streamlit app
 
 on:
   push:
@@ -10,8 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-
+  streamlit:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -19,43 +15,12 @@ jobs:
         python-version: ["3.11", "3.12", "3.13"]
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - uses: streamlit/streamlit-app-action@v0.0.3
-      with:
-        app-path: dashboard.py
-
-    - name: Install uv
-      uses: astral-sh/setup-uv@v6
-      with:
-        python-version: ${{ matrix.python-version }}
-        enable-cache: true
-
-    - name: Install the latest version of ruff
-      uses: astral-sh/ruff-action@v3
-      with:
-        version: "latest"
-
-    - name: Install the project
-      run: |
-        uv sync --all-extras --dev
-
-    - name: Lint with ruff
-      run: |
-        uv run ruff check --output-format=github .
-        uv run ruff format --check --diff .
-
-    - name: Prettify code
-      uses: creyD/prettier_action@v4.6
-      with:
-        # This part is also where you can pass other options, for example:
-        prettier_options: --write **/*.md
-
-    - name: Pytest
-      run: | 
-        uv run pytest
+      - uses: streamlit/streamlit-app-action@v0.0.3
+        with:
+          app-path: streamlit_app.py
+          ruff: true
