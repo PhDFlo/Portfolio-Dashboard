@@ -1,11 +1,12 @@
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
-from dashboard.security_comparator import (
+from dashboard.utils_sec_comp import (
     simulate_contract,
     compute_after_tax_curve,
     create_contract_form,
 )
+from dashboard.utils import plotly_colors
 
 st.subheader("Compare Securities")
 
@@ -20,9 +21,10 @@ with col1:
         create_contract_form(
             st,
             "A",
-            default_label="PEA",
-            default_annual_return=0.06,
-            default_capgains_tax=0.172,
+            label="PEA",
+            annual_return=0.06,
+            capgains_tax=0.172,
+            years=years,
         )
     )
 
@@ -31,9 +33,10 @@ with col2:
         create_contract_form(
             st,
             "B",
-            default_label="CTO",
-            default_annual_return=0.08,
-            default_capgains_tax=0.30,
+            label="CTO",
+            annual_return=0.08,
+            capgains_tax=0.30,
+            years=years,
         )
     )
 
@@ -43,14 +46,7 @@ if st.button("Compare"):
     after_tax_curves = []
     labels = []
     for contract in contracts:
-        series, invested = simulate_contract(
-            initial=contract["initial"],
-            annual_return=contract["annual_return"],
-            years=years,
-            security_fee=contract["security_fee"],
-            bank_fee=contract["bank_fee"],
-            yearly_contribution=contract["yearly_investment"],
-        )
+        series, invested = simulate_contract(contract)
         after_tax_curve = compute_after_tax_curve(
             series, invested, contract["capgains_tax"]
         )
@@ -61,29 +57,16 @@ if st.button("Compare"):
 
     xs = np.arange(0, years + 1)
     fig = go.Figure()
-    colors = [
-        "blue",
-        "green",
-        "red",
-        "purple",
-        "orange",
-        "brown",
-        "pink",
-        "gray",
-        "olive",
-        "cyan",
-    ]
     for idx, (series, after_tax_curve, label) in enumerate(
         zip(series_list, after_tax_curves, labels)
     ):
-        color = colors[idx % len(colors)]
         fig.add_trace(
             go.Scatter(
                 x=xs,
                 y=series,
                 mode="lines",
                 name=f"{label} (pre-withdrawal)",
-                line=dict(color=color, dash="dash"),
+                line=dict(color=plotly_colors[idx], dash="dash"),
             )
         )
         fig.add_trace(
@@ -92,7 +75,7 @@ if st.button("Compare"):
                 y=after_tax_curve,
                 mode="lines",
                 name=f"{label} (after-tax)",
-                line=dict(color=color),
+                line=dict(color=plotly_colors[idx], dash="solid"),
             )
         )
     fig.update_layout(

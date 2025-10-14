@@ -5,6 +5,19 @@ import pandas as pd
 import os
 import glob
 
+plotly_colors = [
+    "blue",
+    "green",
+    "red",
+    "purple",
+    "orange",
+    "brown",
+    "pink",
+    "gray",
+    "olive",
+    "cyan",
+]
+
 
 def get_portfolio_files():
     """Get list of JSON files in Portfolios directory"""
