@@ -31,7 +31,6 @@ def test_increment_and_add(page_file, original_dir):
     # Initial A
     for i in range(12):
         at.number_input[i].increment().run()
-        print(at.number_input[i].value)
 
     # Test assertions
     expected_values = [
@@ -58,4 +57,15 @@ def test_run_comparison(page_file, original_dir):
     at = AppTest.from_file(page_file).run()
     at.number_input[0].increment().run()
     at.button[0].click().run()
+
+    # Test assertions
+    expected_values = [
+        "Final value of PEA (pre-withdrawal): 42516.87 €",
+        "Final value of PEA (after-tax): 36923.97 €",
+        "Final value of CTO (pre-withdrawal): 74489.92 €",
+        "Final value of CTO (after-tax): 55142.94 €",
+    ]
+
     assert at.button[0].value is True
+    for i, expected in enumerate(expected_values):
+        assert at.markdown[i].value == expected_values[i]

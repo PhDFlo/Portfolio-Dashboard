@@ -105,6 +105,13 @@ if st.button("Compare"):
     # Store the plot in session state to persist across pages
     st.session_state["comparison_plot"] = fig
 
+    # Print last value of each series in the console for debugging
+    for idx, (series, label) in enumerate(zip(series_list, labels)):
+        st.markdown(f"Final value of {label} (pre-withdrawal): {series[-1]:.2f} €")
+        st.markdown(
+            f"Final value of {label} (after-tax): {after_tax_curves[idx][-1]:.2f} €"
+        )
+
 # Display the plot if it exists in session state
 if "comparison_plot" in st.session_state:
     st.plotly_chart(
