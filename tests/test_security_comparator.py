@@ -24,7 +24,7 @@ def original_dir():
     os.chdir(original)
 
 
-def test_increment_and_add(page_file, original_dir):
+def test_edit_contracts(page_file, original_dir):
     """A user increments the number input, then clicks Add"""
     at = AppTest.from_file(page_file).run()
 

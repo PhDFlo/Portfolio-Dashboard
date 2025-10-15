@@ -9,11 +9,16 @@ st.subheader("Optimization")
 col1, col2 = st.columns(2)
 with col1:
     new_investment = st.number_input(
-        "New Investment Amount (€)", value=500.0, min_value=0.0, format="%.2f"
+        "New Investment Amount (€)",
+        key="investment_amount",
+        value=500.0,
+        min_value=0.0,
+        format="%.2f",
     )
 with col2:
     min_percent = st.number_input(
         "Minimum Percentage to Invest",
+        key="min_percent",
         value=0.99,
         min_value=0.0,
         max_value=1.0,
@@ -21,7 +26,7 @@ with col2:
     )
 
 # Optimization button and results
-if st.button("🎯 Optimize Portfolio", use_container_width=True):
+if st.button("🎯 Optimize Portfolio", key="optimize_button", use_container_width=True):
     try:
         st.session_state.portfolio.compute_actual_shares()
 
@@ -44,7 +49,6 @@ if "equilibrium_df" in st.session_state:
         st.session_state.equilibrium_df,
         use_container_width=True,
         column_config=eq_data_config,
-        key="equilibrium_table",
     )
 
 # Security purchase section
