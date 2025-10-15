@@ -10,7 +10,7 @@ st.set_page_config(
 )
 
 # Main app
-st.title("📊 Security Portfolio Optimizer")
+st.title("📈 Portfolio Dashboard")
 
 # Initialize session state for portfolio
 if "portfolio" not in st.session_state:
@@ -19,19 +19,19 @@ if "portfolio" not in st.session_state:
 load = st.Page(
     "pages/load_portfolio.py",
     title="Portfolio & Update Prices",
-    icon="📈",
+    icon="📂",
 )
 
 equil = st.Page(
     "pages/equilibrium_buy.py",
     title="Equilibrium, Buy & Export",
-    icon="⚖️",
+    icon="🔨",
 )
 
 compare = st.Page(
     "pages/compare_securities.py",
     title="Compare Securities",
-    icon="🔄",
+    icon="📚",
 )
 
 pg = st.navigation(
