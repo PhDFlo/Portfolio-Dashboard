@@ -23,6 +23,7 @@ with st.sidebar:
     selected_file = st.selectbox(
         "Select Portfolio JSON",
         options=file_options,
+        key="portfolio_file_select",
         index=1
         if len(file_options) > 1 and "investment_example.json" in file_options
         else 0,
@@ -30,11 +31,11 @@ with st.sidebar:
 
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("🔄 Refresh"):
+        if st.button("🔄 Refresh", key="refresh"):
             st.rerun()
 
     with col2:
-        if st.button("📂 Load") and selected_file:
+        if st.button("📂 Load", key="load") and selected_file:
             st.session_state.portfolio = load_portfolio_from_file(
                 f"./Portfolios/{selected_file}"
             )
