@@ -6,7 +6,6 @@ from foliotrack.Portfolio import Portfolio
 from dashboard.utils_load import (
     portfolio2df,
     load_portfolio_from_file,
-    update_portfolio_from_dataframe,
     save_portfolio_to_file,
     get_portfolio_files,
     data_plot_config,
