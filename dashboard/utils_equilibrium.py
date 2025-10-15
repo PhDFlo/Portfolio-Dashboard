@@ -1,4 +1,16 @@
+import streamlit as st
 import pandas as pd
+
+eq_data_config = {
+    "Price": st.column_config.NumberColumn("Price", format="%.4f"),
+    "Target Share": st.column_config.NumberColumn("Target Share", format="%.4f"),
+    "Actual Share": st.column_config.NumberColumn("Actual Share", format="%.4f"),
+    "Final Share": st.column_config.NumberColumn("Final Share", format="%.4f"),
+    "Amount to Invest": st.column_config.NumberColumn(
+        "Amount to Invest", format="%.2f"
+    ),
+    "Number to buy": st.column_config.NumberColumn("Number to buy", format="%.0f"),
+}
 
 
 def eqportfolio2df(portfolio):

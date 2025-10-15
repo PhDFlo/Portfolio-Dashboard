@@ -8,7 +8,7 @@ from dashboard import (
     load_portfolio_from_file,
     save_portfolio_to_file,
     get_portfolio_files,
-    data_plot_config,
+    load_data_config,
 )
 
 
@@ -67,7 +67,7 @@ st.data_editor(
     st.session_state.df,
     num_rows="dynamic",
     use_container_width=True,
-    column_config=data_plot_config,
+    column_config=load_data_config,
     key="portfolio_editor",
 )
 

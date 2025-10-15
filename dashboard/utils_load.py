@@ -5,7 +5,7 @@ import pandas as pd
 import os
 import glob
 
-data_plot_config = {
+load_data_config = {
     "Name": st.column_config.TextColumn("Name", width="medium"),
     "Ticker": st.column_config.TextColumn("Ticker", width="small"),
     "Currency": st.column_config.TextColumn("Currency", width="small"),

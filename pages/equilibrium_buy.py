@@ -2,7 +2,7 @@ import streamlit as st
 from foliotrack.Equilibrate import solve_equilibrium
 import datetime
 import os
-from dashboard import eqportfolio2df
+from dashboard import eqportfolio2df, eq_data_config
 
 # Optimization parameters
 st.subheader("Optimization")
@@ -43,22 +43,8 @@ if "equilibrium_df" in st.session_state:
     st.dataframe(
         st.session_state.equilibrium_df,
         use_container_width=True,
-        column_config={
-            "Price": st.column_config.NumberColumn("Price", format="%.4f"),
-            "Target Share": st.column_config.NumberColumn(
-                "Target Share", format="%.4f"
-            ),
-            "Actual Share": st.column_config.NumberColumn(
-                "Actual Share", format="%.4f"
-            ),
-            "Final Share": st.column_config.NumberColumn("Final Share", format="%.4f"),
-            "Amount to Invest": st.column_config.NumberColumn(
-                "Amount to Invest", format="%.2f"
-            ),
-            "Number to buy": st.column_config.NumberColumn(
-                "Number to buy", format="%.0f"
-            ),
-        },
+        column_config=eq_data_config,
+        key="equilibrium_table",
     )
 
 # Security purchase section

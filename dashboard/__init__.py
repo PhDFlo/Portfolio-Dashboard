@@ -1,9 +1,10 @@
 from .utils_equilibrium import (
+    eq_data_config,
     eqportfolio2df,
 )
 
 from .utils_load import (
-    data_plot_config,
+    load_data_config,
     get_portfolio_files,
     load_portfolio_from_file,
     save_portfolio_to_file,
@@ -18,8 +19,9 @@ from .utils_sec_comp import (
 )
 
 __all__ = [
+    "eq_data_config",
     "eqportfolio2df",
-    "data_plot_config",
+    "load_data_config",
     "get_portfolio_files",
     "load_portfolio_from_file",
     "save_portfolio_to_file",
