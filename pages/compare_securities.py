@@ -5,8 +5,8 @@ from dashboard.utils_sec_comp import (
     simulate_contract,
     compute_after_tax_curve,
     create_contract_form,
+    plotly_colors,
 )
-from dashboard.utils import plotly_colors
 
 st.subheader("Compare Securities")
 

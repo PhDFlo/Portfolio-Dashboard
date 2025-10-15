@@ -3,7 +3,7 @@ from foliotrack.Equilibrate import solve_equilibrium
 import pandas as pd
 import datetime
 import os
-from dashboard.utils import update_portfolio_from_dataframe
+from dashboard.utils_load import update_portfolio_from_dataframe
 
 # Optimization parameters
 st.subheader("Optimization")

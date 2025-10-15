@@ -5,18 +5,18 @@ import pandas as pd
 import os
 import glob
 
-plotly_colors = [
-    "blue",
-    "green",
-    "red",
-    "purple",
-    "orange",
-    "brown",
-    "pink",
-    "gray",
-    "olive",
-    "cyan",
-]
+data_plot_config = {
+    "Name": st.column_config.TextColumn("Name", width="medium"),
+    "Ticker": st.column_config.TextColumn("Ticker", width="small"),
+    "Currency": st.column_config.TextColumn("Currency", width="small"),
+    "Price": st.column_config.NumberColumn("Price", format="%.4f"),
+    "Actual Share": st.column_config.NumberColumn("Actual Share", format="%.4f"),
+    "Target Share": st.column_config.NumberColumn("Target Share", format="%.4f"),
+    f"Amount Invested ({st.session_state.portfolio.symbol})": st.column_config.NumberColumn(
+        f"Amount Invested ({st.session_state.portfolio.symbol})", format="%.2f"
+    ),
+    "Number Held": st.column_config.NumberColumn("Number Held", format="%.0f"),
+}
 
 
 def get_portfolio_files():
@@ -26,7 +26,7 @@ def get_portfolio_files():
     return glob.glob("./Portfolios/*.json")
 
 
-def load_portfolio_data(portfolio):
+def portfolio2df(portfolio):
     """Convert portfolio info to DataFrame format for display"""
     info = portfolio.get_portfolio_info()
     data = []
@@ -51,9 +51,9 @@ def load_portfolio_data(portfolio):
 def load_portfolio_from_file(filename):
     """Load portfolio from JSON file"""
     try:
-        st.session_state.portfolio = Portfolio.from_json(filename)
+        portfolio = Portfolio.from_json(filename)
         st.success(f"Portfolio loaded from {filename}")
-        return True
+        return portfolio
     except Exception as e:
         st.error(f"Error loading portfolio: {str(e)}")
         return False

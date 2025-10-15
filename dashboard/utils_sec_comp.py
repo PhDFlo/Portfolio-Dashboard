@@ -1,5 +1,18 @@
 import numpy as np
 
+plotly_colors = [
+    "blue",
+    "green",
+    "red",
+    "purple",
+    "orange",
+    "brown",
+    "pink",
+    "gray",
+    "olive",
+    "cyan",
+]
+
 
 def simulate_contract(contract):
     """

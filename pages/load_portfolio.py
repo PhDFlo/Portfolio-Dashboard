@@ -2,14 +2,15 @@ import streamlit as st
 import pandas as pd
 import os
 import datetime
-from dashboard.utils import (
-    load_portfolio_data,
+from foliotrack.Portfolio import Portfolio
+from dashboard.utils_load import (
+    portfolio2df,
     load_portfolio_from_file,
     update_portfolio_from_dataframe,
     save_portfolio_to_file,
     get_portfolio_files,
+    data_plot_config,
 )
-from foliotrack.Portfolio import Portfolio
 
 
 # Sidebar for file operations
@@ -35,7 +36,9 @@ with st.sidebar:
 
     with col2:
         if st.button("📂 Load") and selected_file:
-            load_portfolio_from_file(f"./Portfolios/{selected_file}")
+            st.session_state.portfolio = load_portfolio_from_file(
+                f"./Portfolios/{selected_file}"
+            )
             st.rerun()
 
 # Display current portfolio in editable table
@@ -44,7 +47,7 @@ if "portfolio" not in st.session_state:
     st.session_state.portfolio = Portfolio()
 
 if st.session_state.portfolio.securities:
-    st.session_state.df = load_portfolio_data(st.session_state.portfolio)
+    st.session_state.df = portfolio2df(st.session_state.portfolio)
 else:
     # Create empty dataframe with proper structure
     st.session_state.df = pd.DataFrame(
@@ -61,42 +64,24 @@ else:
     )
 st.subheader("Security List")
 
-st.session_state.edited_df = st.data_editor(
+st.data_editor(
     st.session_state.df,
     num_rows="dynamic",
     use_container_width=True,
-    column_config={
-        "Name": st.column_config.TextColumn("Name", width="medium"),
-        "Ticker": st.column_config.TextColumn("Ticker", width="small"),
-        "Currency": st.column_config.TextColumn("Currency", width="small"),
-        "Price": st.column_config.NumberColumn("Price", format="%.4f"),
-        "Actual Share": st.column_config.NumberColumn("Actual Share", format="%.4f"),
-        "Target Share": st.column_config.NumberColumn("Target Share", format="%.4f"),
-        f"Amount Invested ({st.session_state.portfolio.symbol})": st.column_config.NumberColumn(
-            f"Amount Invested ({st.session_state.portfolio.symbol})", format="%.2f"
-        ),
-        "Number Held": st.column_config.NumberColumn("Number Held", format="%.0f"),
-    },
+    column_config=data_plot_config,
     key="portfolio_editor",
 )
-# Update portfolio if data was edited
-if not st.session_state.edited_df.equals(st.session_state.df):
-    update_portfolio_from_dataframe(st.session_state.edited_df)
 
-# Action buttons
-col1, col2 = st.columns(2)
-with col1:
-    if st.button("💰 Update Security Prices", use_container_width=True):
-        try:
-            st.session_state.portfolio.update_security_prices()
-            st.session_state.portfolio.compute_actual_shares()
-            st.success("Security prices updated!")
-            st.rerun()
-        except Exception as e:
-            st.error(f"Error updating prices: {str(e)}")
-with col2:
-    if st.button("🔄 Refresh Portfolio Display", use_container_width=True):
+# Update security prices
+if st.button("💰 Update Security Prices", use_container_width=True):
+    try:
+        st.session_state.portfolio.update_security_prices()
+        st.session_state.portfolio.compute_actual_shares()
+        st.success("Security prices updated!")
         st.rerun()
+    except Exception as e:
+        st.error(f"Error updating prices: {str(e)}")
+
 # Save portfolio section
 st.subheader("Save Portfolio")
 col1, col2 = st.columns([3, 1])
