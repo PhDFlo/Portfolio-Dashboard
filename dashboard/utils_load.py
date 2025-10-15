@@ -1,5 +1,4 @@
 import streamlit as st
-from foliotrack.Security import Security
 from foliotrack.Portfolio import Portfolio
 import pandas as pd
 import os
