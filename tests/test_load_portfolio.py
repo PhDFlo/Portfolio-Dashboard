@@ -35,9 +35,8 @@ def test_select_and_load_file(page_file, original_dir):
     # Select default file (e.g. investment_example.json)
     at.selectbox(key="portfolio_file_select").set_value("investment_example.json").run()
 
-    # CLick on the "Load" button
-    if at.button:
-        at.button(key="load").click().run()
+    # Click on the "Load" button
+    at.button(key="load").click().run()
 
     expected_df = pd.DataFrame(
         {
@@ -60,3 +59,57 @@ def test_select_and_load_file(page_file, original_dir):
         assert at.dataframe[0].value[key].equals(expected_df[key]), (
             f"Mismatch in column {key}"
         )
+
+
+def test_update_security_price(page_file, original_dir):
+    """Select a portfolio file and click Load (or Refresh)"""
+    # Initialize the app test with the main app so pages and sidebar are registered
+    at = AppTest.from_file("dashboard.py").run()
+
+    # Switch to the load_portfolio page to render it within the full app
+    at.switch_page(page_file)
+    at.run()
+
+    # Select default file (e.g. investment_example.json)
+    at.selectbox(key="portfolio_file_select").set_value("investment_example.json").run()
+
+    # Click on the "Load" button
+    at.button(key="load").click().run()
+
+    # Click on the "Update Securities Price" button
+    at.button(key="update_securities_price").click().run()
+
+    # Check that prices have been updated (not equal to initial values)
+    updated_prices = at.dataframe[0].value["Price"]
+    initial_prices = [500.0, 300.0, 200.0]
+    assert not updated_prices.equals(pd.Series(initial_prices)), (
+        "Prices were not updated"
+    )
+
+
+def test_save_file(page_file, original_dir):
+    """Select a portfolio file, load it, modify it and save it"""
+    # Initialize the app test with the main app so pages and sidebar are registered
+    at = AppTest.from_file("dashboard.py").run()
+
+    # Switch to the load_portfolio page to render it within the full app
+    at.switch_page(page_file)
+    at.run()
+
+    # Select default file (e.g. investment_example.json)
+    at.selectbox(key="portfolio_file_select").set_value("investment_example.json").run()
+
+    # Click on the "Load" button
+    at.button(key="load").click().run()
+
+    # Modify the save filename
+    filepath = "./Portfolios/investment_test.json"
+    at.text_input(key="save_filename").set_value(filepath).run()
+
+    # Click on the "Save" button
+    at.button(key="save_button").click().run()
+
+    assert os.path.exists(filepath), "Saved file does not exist"
+
+    # Clean up
+    os.remove(filepath)

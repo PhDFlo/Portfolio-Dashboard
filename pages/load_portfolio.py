@@ -73,7 +73,11 @@ st.data_editor(
 )
 
 # Update security prices
-if st.button("💰 Update Security Prices", use_container_width=True):
+if st.button(
+    "💰 Update Securities Price",
+    key="update_securities_price",
+    use_container_width=True,
+):
     try:
         st.session_state.portfolio.update_security_prices()
         st.session_state.portfolio.compute_actual_shares()
@@ -89,9 +93,11 @@ with col1:
     default_filename = (
         f"Portfolios/investment_{datetime.datetime.now().strftime('%d_%m_%Y')}.json"
     )
-    save_filename = st.text_input("Save as filename", value=default_filename)
+    save_filename = st.text_input(
+        "Save as filename", value=default_filename, key="save_filename"
+    )
 with col2:
     st.write("")  # Add spacing
     st.write("")  # Add spacing
-    if st.button("💾 Save Portfolio"):
+    if st.button("💾 Save Portfolio", key="save_button"):
         save_portfolio_to_file(save_filename)
