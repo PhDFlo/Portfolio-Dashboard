@@ -1,9 +1,8 @@
 import streamlit as st
 from foliotrack.Equilibrate import solve_equilibrium
-import pandas as pd
 import datetime
 import os
-from dashboard.utils_load import update_portfolio_from_dataframe
+from dashboard import eqportfolio2df, eq_data_config
 
 # Optimization parameters
 st.subheader("Optimization")
@@ -24,8 +23,6 @@ with col2:
 # Optimization button and results
 if st.button("🎯 Optimize Portfolio", use_container_width=True):
     try:
-        # Update portfolio from current data
-        update_portfolio_from_dataframe(st.session_state.edited_df)
         st.session_state.portfolio.compute_actual_shares()
 
         # Run optimization
@@ -36,23 +33,7 @@ if st.button("🎯 Optimize Portfolio", use_container_width=True):
         )
 
         # Display results
-        info = st.session_state.portfolio.get_portfolio_info()
-        equilibrium_data = []
-        for security_info in info:
-            equilibrium_data.append(
-                {
-                    "Name": security_info.get("name"),
-                    "Ticker": security_info.get("ticker"),
-                    "Currency": security_info.get("currency"),
-                    "Price": security_info.get("price_in_security_currency"),
-                    "Target Share": security_info.get("target_share"),
-                    "Actual Share": security_info.get("actual_share"),
-                    "Final Share": security_info.get("final_share"),
-                    "Amount to Invest": security_info.get("amount_to_invest"),
-                    "Number to buy": security_info.get("number_to_buy"),
-                }
-            )
-        st.session_state.equilibrium_df = pd.DataFrame(equilibrium_data)
+        st.session_state.equilibrium_df = eqportfolio2df(st.session_state.portfolio)
 
     except Exception as e:
         st.error(f"Error during optimization: {str(e)}")
@@ -62,22 +43,8 @@ if "equilibrium_df" in st.session_state:
     st.dataframe(
         st.session_state.equilibrium_df,
         use_container_width=True,
-        column_config={
-            "Price": st.column_config.NumberColumn("Price", format="%.4f"),
-            "Target Share": st.column_config.NumberColumn(
-                "Target Share", format="%.4f"
-            ),
-            "Actual Share": st.column_config.NumberColumn(
-                "Actual Share", format="%.4f"
-            ),
-            "Final Share": st.column_config.NumberColumn("Final Share", format="%.4f"),
-            "Amount to Invest": st.column_config.NumberColumn(
-                "Amount to Invest", format="%.2f"
-            ),
-            "Number to buy": st.column_config.NumberColumn(
-                "Number to buy", format="%.0f"
-            ),
-        },
+        column_config=eq_data_config,
+        key="equilibrium_table",
     )
 
 # Security purchase section

@@ -3,8 +3,8 @@ from foliotrack.Portfolio import Portfolio
 
 # Configure page
 st.set_page_config(
-    page_title="Security Portfolio Optimizer",
-    page_icon="📊",
+    page_title="Portfolio Dashboard",
+    page_icon="📈",
     layout="wide",
     initial_sidebar_state="expanded",
 )

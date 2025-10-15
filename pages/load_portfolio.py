@@ -3,12 +3,12 @@ import pandas as pd
 import os
 import datetime
 from foliotrack.Portfolio import Portfolio
-from dashboard.utils_load import (
-    portfolio2df,
+from dashboard import (
+    loadportfolio2df,
     load_portfolio_from_file,
     save_portfolio_to_file,
     get_portfolio_files,
-    data_plot_config,
+    load_data_config,
 )
 
 
@@ -46,7 +46,7 @@ if "portfolio" not in st.session_state:
     st.session_state.portfolio = Portfolio()
 
 if st.session_state.portfolio.securities:
-    st.session_state.df = portfolio2df(st.session_state.portfolio)
+    st.session_state.df = loadportfolio2df(st.session_state.portfolio)
 else:
     # Create empty dataframe with proper structure
     st.session_state.df = pd.DataFrame(
@@ -67,7 +67,7 @@ st.data_editor(
     st.session_state.df,
     num_rows="dynamic",
     use_container_width=True,
-    column_config=data_plot_config,
+    column_config=load_data_config,
     key="portfolio_editor",
 )
 
