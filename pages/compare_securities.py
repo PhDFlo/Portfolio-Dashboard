@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
-from dashboard.utils_sec_comp import (
+from dashboard import (
     simulate_contract,
     compute_after_tax_curve,
     create_contract_form,

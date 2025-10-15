@@ -26,7 +26,7 @@ def get_portfolio_files():
     return glob.glob("./Portfolios/*.json")
 
 
-def portfolio2df(portfolio):
+def loadportfolio2df(portfolio):
     """Convert portfolio info to DataFrame format for display"""
     info = portfolio.get_portfolio_info()
     data = []
@@ -70,28 +70,3 @@ def save_portfolio_to_file(filename):
     except Exception as e:
         st.error(f"Error saving portfolio: {str(e)}")
         return False
-
-
-def update_portfolio_from_dataframe(df):
-    """Update portfolio object from edited dataframe"""
-    st.session_state.portfolio.securities.clear()
-    for _, row in df.iterrows():
-        if pd.notna(row["Name"]) and pd.notna(row["Ticker"]):
-            security = Security(
-                name=str(row["Name"]),
-                ticker=str(row["Ticker"]),
-                currency=str(row["Currency"]) if pd.notna(row["Currency"]) else "EUR",
-                price_in_security_currency=float(row["Price"])
-                if pd.notna(row["Price"])
-                else 0.0,
-                actual_share=float(row["Actual Share"])
-                if pd.notna(row["Actual Share"])
-                else 0.0,
-                target_share=float(row["Target Share"])
-                if pd.notna(row["Target Share"])
-                else 0.0,
-                number_held=float(row["Number Held"])
-                if pd.notna(row["Number Held"])
-                else 0.0,
-            )
-            st.session_state.portfolio.add_security(security)
