@@ -13,6 +13,10 @@ eq_data_config = {
 }
 
 
+# Need to update method to include actual share and final share
+#                "Target Share": security.get("target_share"),
+#                "Actual Share": security.get("actual_share"),
+#                "Final Share": security.get("final_share"),
 def eqportfolio2df(portfolio):
     """Convert portfolio info to DataFrame format for display"""
     info = portfolio.get_portfolio_info()
@@ -24,9 +28,6 @@ def eqportfolio2df(portfolio):
                 "Ticker": security.get("ticker"),
                 "Currency": security.get("currency"),
                 "Price": security.get("price_in_security_currency"),
-                "Target Share": security.get("target_share"),
-                "Actual Share": security.get("actual_share"),
-                "Final Share": security.get("final_share"),
                 "Amount to Invest": security.get("amount_to_invest"),
                 "Number to buy": security.get("number_to_buy"),
             }

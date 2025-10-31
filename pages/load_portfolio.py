@@ -79,8 +79,7 @@ if st.button(
     use_container_width=True,
 ):
     try:
-        st.session_state.portfolio.update_security_prices()
-        st.session_state.portfolio.compute_actual_shares()
+        st.session_state.portfolio.update_portfolio()
         st.success("Security prices updated!")
         st.rerun()
     except Exception as e:
