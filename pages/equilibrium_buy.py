@@ -66,9 +66,7 @@ with col3:
             st.session_state.portfolio.buy_security(
                 ticker_input,
                 quantity,
-                buy_price=buy_price,
-                date=str(purchase_date),
-                fee=fee,
+                price=buy_price,
             )
             st.success(f"Bought {quantity} unit(s) of {ticker_input} at {buy_price}")
         except Exception as e:
