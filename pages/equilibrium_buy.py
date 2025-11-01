@@ -28,8 +28,6 @@ with col2:
 # Optimization button and results
 if st.button("🎯 Optimize Portfolio", key="optimize_button", use_container_width=True):
     try:
-        st.session_state.portfolio.compute_actual_shares()
-
         # Run optimization
         solve_equilibrium(
             st.session_state.portfolio,
