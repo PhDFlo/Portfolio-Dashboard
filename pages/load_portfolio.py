@@ -27,6 +27,7 @@ with st.sidebar:
         index=1
         if len(file_options) > 1 and "investment_example.json" in file_options
         else 0,
+        accept_new_options=True,
     )
 
     col1, col2 = st.columns(2)
@@ -99,6 +100,7 @@ with col1:
         key="ticker_buy_choice",
         index=1
         if len(ticker_options) > 1 else 0,
+        accept_new_options=True,
     )
     quantity = st.number_input("Quantity to Buy", value=1.0, format="%.1f", step=1.0)
     
@@ -122,6 +124,7 @@ with col2:
         key="ticker_sell_choice",
         index=1
         if len(ticker_options) > 1 else 0,
+        accept_new_options=True,
     )
     quantity_sell = st.number_input(
         "Quantity to Sell", value=1.0, format="%.1f", step=1.0, key="sell_quantity"

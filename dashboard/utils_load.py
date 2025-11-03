@@ -5,7 +5,7 @@ import os
 import glob
 
 load_data_config = {
-    "Name": st.column_config.TextColumn("Name", width="medium"),
+    "Name": st.column_config.TextColumn("Name", width="large"),
     "Ticker": st.column_config.TextColumn("Ticker", width="small"),
     "Currency": st.column_config.TextColumn("Currency", width="small"),
     "Price": st.column_config.NumberColumn("Price", format="%.4f"),
