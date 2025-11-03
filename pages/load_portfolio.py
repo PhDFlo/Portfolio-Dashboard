@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import os
-import datetime
 from foliotrack.Portfolio import Portfolio
 from dashboard import (
     loadportfolio2df,
@@ -163,16 +162,19 @@ with col2:
         
 # Save portfolio section
 st.subheader("Save Portfolio")
-col1, col2 = st.columns([3, 1])
+col1, col2 = st.columns(2)
 with col1:
-    default_filename = (
-        f"Portfolios/investment_{datetime.datetime.now().strftime('%d_%m_%Y')}.json"
+    save_filename = st.selectbox(
+        "Save as filename",
+        options=file_options,
+        key="portfolio_file_save",
+        index=1
+        if len(file_options) > 1 and "investment_example.json" in file_options
+        else 0,
+        accept_new_options=True,
     )
-    save_filename = st.text_input(
-        "Save as filename", value=default_filename, key="save_filename"
-    )
-with col2:
-    st.write("")  # Add spacing
-    st.write("")  # Add spacing
-    if st.button("💾 Save Portfolio", key="save_button"):
+    
+    if st.button("💾 Save Portfolio", 
+                 key="save_button", 
+                 use_container_width=True):
         save_portfolio_to_file(save_filename)
