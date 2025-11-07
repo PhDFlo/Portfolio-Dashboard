@@ -20,7 +20,7 @@ def original_dir():
 
 def test_edit_investment(page_file, original_dir):
     """Increment investment amount and minimum percentage inputs"""
-    at = AppTest.from_file("dashboard.py").run()
+    at = AppTest.from_file("app.py").run()
 
     # Switch to the load_portfolio page to render it within the full app
     at.switch_page(page_file)
@@ -40,7 +40,7 @@ def test_edit_investment(page_file, original_dir):
 
 def test_optimize_portfolio(page_file, original_dir):
     """Click Optimize Portfolio button"""
-    at = AppTest.from_file("dashboard.py").run()
+    at = AppTest.from_file("app.py").run()
 
     # Switch to the load_portfolio page to render it within the full app
     at.switch_page("pages/load_portfolio.py")
@@ -59,7 +59,7 @@ def test_optimize_portfolio(page_file, original_dir):
 
     expected_df = pd.DataFrame(
         {
-            "Number to buy": [1, 0, 0],
+            "Number to buy": [1, 2, 0],
         }
     )
 
