@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 
 eq_data_config = {
+    "Name": st.column_config.TextColumn("Name"),
+    "Ticker": st.column_config.TextColumn("Ticker"),
+    "Currency": st.column_config.TextColumn("Currency"),
     "Price": st.column_config.NumberColumn("Price", format="%.4f"),
     "Target Share": st.column_config.NumberColumn("Target Share", format="%.4f"),
     "Actual Share": st.column_config.NumberColumn("Actual Share", format="%.4f"),

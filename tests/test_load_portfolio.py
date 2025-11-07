@@ -23,7 +23,7 @@ def original_dir():
 def test_select_and_load_file(page_file, original_dir):
     """Select a portfolio file and click Load (or Refresh)"""
     # Initialize the app test with the main app so pages and sidebar are registered
-    at = AppTest.from_file("dashboard.py").run()
+    at = AppTest.from_file("app.py").run()
 
     # Switch to the load_portfolio page to render it within the full app
     at.switch_page(page_file)
@@ -41,17 +41,16 @@ def test_select_and_load_file(page_file, original_dir):
     expected_df = pd.DataFrame(
         {
             "Name": [
-                "Amundi MSCI World UCITS Security",
+                "Airbus SE",
                 "NVIDIA Corporation",
-                "iShares Core MSCI Emerging Markets IMI UCITS Security",
+                "LVMH Mo\u00ebt Hennessy - Louis Vuitton, Soci\u00e9t\u00e9 Europ\u00e9enne",
             ],
-            "Ticker": ["AMDW", "NVDA", "EIMI.L"],
+            "Ticker": ["AIR.PA", "NVDA", "MC.PA"],
             "Currency": ["EUR", "USD", "EUR"],
-            "Price": [500.0, 300.0, 200.0],
-            "Actual Share": [0.92, 0.03, 0.06],
+            "Price": [200.0, 150.0, 600.0],
+            "Actual Share": [0.8441, 0.0349, 0.1211],
             "Target Share": [0.5, 0.2, 0.3],
-            # "Amount Invested (€)": [10000.0, 255.63, 600.0], # Amount invested not tested as currency change will affect the result
-            "Number Held": [20.0, 1.0, 3.0],
+            "Quantity": [20.0, 1.0, 1.0],
         }
     )
 
@@ -64,7 +63,7 @@ def test_select_and_load_file(page_file, original_dir):
 def test_update_security_price(page_file, original_dir):
     """Select a portfolio file and click Load (or Refresh)"""
     # Initialize the app test with the main app so pages and sidebar are registered
-    at = AppTest.from_file("dashboard.py").run()
+    at = AppTest.from_file("app.py").run()
 
     # Switch to the load_portfolio page to render it within the full app
     at.switch_page(page_file)
@@ -87,10 +86,52 @@ def test_update_security_price(page_file, original_dir):
     )
 
 
+def test_buy_sell_security(page_file, original_dir):
+    """Select a portfolio file, load it, buy and sell a security"""
+    # Initialize the app test with the main app so pages and sidebar are registered
+    at = AppTest.from_file("app.py").run()
+
+    # Switch to the load_portfolio page to render it within the full app
+    at.switch_page(page_file)
+    at.run()
+
+    # Select default file (e.g. investment_example.json)
+    at.selectbox(key="portfolio_file_select").set_value("investment_example.json").run()
+
+    # Click on the "Load" button
+    at.button(key="load").click().run()
+
+    # Buy 2 shares of NVIDIA Corporation
+    at.selectbox(key="ticker_buy_choice").set_value("NVDA").run()
+    at.number_input(key="buy_quantity").set_value(2).run()
+    at.number_input(key="buy_price").set_value(250.0).run()
+    at.button(key="buy_button").click().run()
+
+    # Check that quantities have been updated
+    assert at.dataframe[0].value.set_index("Ticker")["Quantity"]["NVDA"] == 3.0, (
+        "Buy operation failed"
+    )
+
+    # Sell 1 share of Airbus SE
+    at.selectbox(key="ticker_sell_choice").set_value("AIR.PA").run()
+    at.number_input(key="sell_quantity").set_value(1).run()
+    at.button(key="sell_button").click().run()
+
+    # Check that quantities have been updated
+    assert at.dataframe[0].value.set_index("Ticker")["Quantity"]["AIR.PA"] == 19.0, (
+        "Sell operation failed"
+    )
+
+
 def test_save_file(page_file, original_dir):
     """Select a portfolio file, load it, modify it and save it"""
+    # Creates save file as selectox options must exist in Apptest
+    filepath = "./Portfolios/investment_test.json"
+    with open(filepath, "w"):
+        pass
+
     # Initialize the app test with the main app so pages and sidebar are registered
-    at = AppTest.from_file("dashboard.py").run()
+    at = AppTest.from_file("app.py").run()
 
     # Switch to the load_portfolio page to render it within the full app
     at.switch_page(page_file)
@@ -103,8 +144,7 @@ def test_save_file(page_file, original_dir):
     at.button(key="load").click().run()
 
     # Modify the save filename
-    filepath = "./Portfolios/investment_test.json"
-    at.text_input(key="save_filename").set_value(filepath).run()
+    at.selectbox(key="portfolio_file_save").set_value("investment_test.json").run()
 
     # Click on the "Save" button
     at.button(key="save_button").click().run()

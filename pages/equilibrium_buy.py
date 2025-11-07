@@ -1,7 +1,6 @@
 import streamlit as st
 from foliotrack.Equilibrate import solve_equilibrium
 import datetime
-import os
 from dashboard import eqportfolio2df, eq_data_config
 
 # Optimization parameters
@@ -28,8 +27,6 @@ with col2:
 # Optimization button and results
 if st.button("🎯 Optimize Portfolio", key="optimize_button", use_container_width=True):
     try:
-        st.session_state.portfolio.compute_actual_shares()
-
         # Run optimization
         solve_equilibrium(
             st.session_state.portfolio,
@@ -68,29 +65,8 @@ with col3:
             st.session_state.portfolio.buy_security(
                 ticker_input,
                 quantity,
-                buy_price=buy_price,
-                date=str(purchase_date),
-                fee=fee,
+                price=buy_price,
             )
             st.success(f"Bought {quantity} unit(s) of {ticker_input} at {buy_price}")
         except Exception as e:
             st.error(f"Error buying security: {str(e)}")
-
-# Export section
-st.subheader("Export Staged Purchases")
-col1, col2 = st.columns([3, 1])
-with col1:
-    export_filename = st.text_input(
-        "Export filename", value="Purchases/staged_purchases.csv"
-    )
-with col2:
-    st.write("")  # Add spacing
-    st.write("")  # Add spacing
-    if st.button("📤 Export Purchases"):
-        try:
-            # Ensure directory exists
-            os.makedirs(os.path.dirname(export_filename), exist_ok=True)
-            st.session_state.portfolio.purchases_to_wealthfolio_csv(export_filename)
-            st.success(f"Staged purchases exported to {export_filename}")
-        except Exception as e:
-            st.error(f"Error exporting purchases: {str(e)}")

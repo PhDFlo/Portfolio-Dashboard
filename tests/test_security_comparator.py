@@ -17,7 +17,7 @@ def page_file():
 def original_dir():
     # Store original directory
     original = os.getcwd()
-    # Change to the directory containing dashboard.py for proper path resolution
+    # Change to the directory containing app.py for proper path resolution
     os.chdir(str(Path(__file__).parent.parent))
     yield original
     # Restore the original directory after test

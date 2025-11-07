@@ -5,16 +5,16 @@ import os
 import glob
 
 load_data_config = {
-    "Name": st.column_config.TextColumn("Name", width="medium"),
+    "Name": st.column_config.TextColumn("Name", width="large"),
     "Ticker": st.column_config.TextColumn("Ticker", width="small"),
     "Currency": st.column_config.TextColumn("Currency", width="small"),
     "Price": st.column_config.NumberColumn("Price", format="%.4f"),
     "Actual Share": st.column_config.NumberColumn("Actual Share", format="%.4f"),
     "Target Share": st.column_config.NumberColumn("Target Share", format="%.4f"),
-    f"Amount Invested ({st.session_state.portfolio.symbol})": st.column_config.NumberColumn(
-        f"Amount Invested ({st.session_state.portfolio.symbol})", format="%.2f"
+    f"Total value ({st.session_state.portfolio.symbol})": st.column_config.NumberColumn(
+        f"Total value ({st.session_state.portfolio.symbol})", format="%.2f"
     ),
-    "Number Held": st.column_config.NumberColumn("Number Held", format="%.0f"),
+    "Quantity": st.column_config.NumberColumn("Quantity", format="%.0f"),
 }
 
 
@@ -38,10 +38,10 @@ def loadportfolio2df(portfolio):
                 "Price": security.get("price_in_security_currency"),
                 "Actual Share": security.get("actual_share"),
                 "Target Share": security.get("target_share"),
-                f"Amount Invested ({portfolio.symbol})": security.get(
-                    "amount_invested"
+                f"Total value ({portfolio.symbol})": security.get(
+                    "value"
                 ),
-                "Number Held": security.get("number_held"),
+                "Quantity": security.get("quantity"),
             }
         )
     return pd.DataFrame(data)
