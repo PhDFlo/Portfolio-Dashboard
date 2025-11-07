@@ -62,9 +62,11 @@ else:
             "Number Held": [0.0],
         }
     )
-   
-# List of tickers for buy and sell 
-ticker_options = [""] + [security.ticker for security in st.session_state.portfolio.securities]
+
+# List of tickers for buy and sell
+ticker_options = [""] + [
+    security.ticker for security in st.session_state.portfolio.securities
+]
 
 st.subheader("Security List")
 
@@ -87,8 +89,8 @@ if st.button(
         st.rerun()
     except Exception as e:
         st.error(f"Error updating prices: {str(e)}")
-        
-# Buy and sell section
+
+# Buy and sell section
 col1, col2 = st.columns(2)
 
 with col1:
@@ -97,13 +99,14 @@ with col1:
         "Security ticker",
         options=ticker_options,
         key="ticker_buy_choice",
-        index=1
-        if len(ticker_options) > 1 else 0,
+        index=1 if len(ticker_options) > 1 else 0,
         accept_new_options=True,
     )
-    quantity = st.number_input("Quantity to Buy", value=1.0, format="%.1f", step=1.0)
-    
-    # Set default currency and value based on selected ticker
+    quantity = st.number_input(
+        "Quantity to Buy", key="buy_quantity", value=1.0, format="%.1f", step=1.0
+    )
+
+    # Set default currency and value based on selected ticker
     default_currency = st.session_state.portfolio.currency
     default_buy_price = 0.0
     for security in st.session_state.portfolio.securities:
@@ -111,29 +114,30 @@ with col1:
             default_currency = security.currency
             default_buy_price = security.price_in_security_currency
             break
-    
-    currency = st.text_input("Security Currency", value=default_currency)
-    buy_price = st.number_input("Unit Price", value=default_buy_price, format="%.2f")
-            
+
+    currency = st.text_input(
+        "Security Currency", key="buy_currency", value=default_currency
+    )
+    buy_price = st.number_input(
+        "Unit Price", key="buy_price", value=default_buy_price, format="%.2f"
+    )
+
 with col2:
     st.subheader("Sell Security")
     ticker_input_sell = st.selectbox(
         "Security ticker to sell",
         options=ticker_options,
         key="ticker_sell_choice",
-        index=1
-        if len(ticker_options) > 1 else 0,
+        index=1 if len(ticker_options) > 1 else 0,
         accept_new_options=True,
     )
     quantity_sell = st.number_input(
-        "Quantity to Sell", value=1.0, format="%.1f", step=1.0, key="sell_quantity"
+        "Quantity to Sell", key="sell_quantity", value=1.0, format="%.1f", step=1.0
     )
 
-col1, col2 = st.columns(2)     
+col1, col2 = st.columns(2)
 with col1:
-    if st.button("📥 Buy Security",
-        key="buy_security",
-        use_container_width=True):
+    if st.button("📥 Buy Security", key="buy_button", use_container_width=True):
         try:
             st.session_state.portfolio.buy_security(
                 ticker=ticker_input_buy,
@@ -141,15 +145,15 @@ with col1:
                 price=buy_price,
                 currency=currency,
             )
-            st.success(f"Bought {quantity} unit(s) of {ticker_input_buy} at {buy_price}")
+            st.success(
+                f"Bought {quantity} unit(s) of {ticker_input_buy} at {buy_price}"
+            )
             st.rerun()
         except Exception as e:
             st.error(f"Error buying security: {str(e)}")
-            
+
 with col2:
-    if st.button("📤 Sell Security",
-        key="sell_security",
-        use_container_width=True):
+    if st.button("📤 Sell Security", key="sell_button", use_container_width=True):
         try:
             st.session_state.portfolio.sell_security(
                 ticker=ticker_input_sell,
@@ -159,7 +163,7 @@ with col2:
             st.rerun()
         except Exception as e:
             st.error(f"Error selling security: {str(e)}")
-        
+
 # Save portfolio section
 st.subheader("Save Portfolio")
 col1, col2 = st.columns(2)
@@ -173,8 +177,6 @@ with col1:
         else 0,
         accept_new_options=True,
     )
-    
-    if st.button("💾 Save Portfolio", 
-                 key="save_button", 
-                 use_container_width=True):
+
+    if st.button("💾 Save Portfolio", key="save_button", use_container_width=True):
         save_portfolio_to_file(save_filename)
