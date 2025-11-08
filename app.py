@@ -34,6 +34,12 @@ compare = st.Page(
     icon="📚",
 )
 
+exchange = st.Page(
+    "pages/exchange_rates.py",
+    title="Exchange Rates",
+    icon="💲",
+)
+
 pg = st.navigation(
     {
         "Manage": [
@@ -42,6 +48,7 @@ pg = st.navigation(
         ],
         "Tools": [
             compare,
+            exchange,
         ],
     }
 )
