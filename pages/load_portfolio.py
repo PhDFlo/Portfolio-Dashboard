@@ -179,4 +179,4 @@ with col1:
     )
 
     if st.button("💾 Save Portfolio", key="save_button", use_container_width=True):
-        save_portfolio_to_file(f"./Portfolios/{save_filename}")
+        save_portfolio_to_file(save_filename)

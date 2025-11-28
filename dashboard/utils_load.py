@@ -38,9 +38,7 @@ def loadportfolio2df(portfolio):
                 "Price": security.get("price_in_security_currency"),
                 "Actual Share": security.get("actual_share"),
                 "Target Share": security.get("target_share"),
-                f"Total value ({portfolio.symbol})": security.get(
-                    "value"
-                ),
+                f"Total value ({portfolio.symbol})": security.get("value"),
                 "Quantity": security.get("quantity"),
             }
         )
@@ -61,10 +59,9 @@ def load_portfolio_from_file(filename):
 def save_portfolio_to_file(filename):
     """Save portfolio to JSON file"""
     try:
-        # Ensure directory exists
-        os.makedirs(os.path.dirname(filename), exist_ok=True)
-        st.session_state.portfolio.to_json(filename)
-        st.success(f"Portfolio saved to {filename}")
+        filepath = "./Portfolios/" + filename
+        st.session_state.portfolio.to_json(filepath)
+        st.success(f"Portfolio saved to {filepath}")
         return True
     except Exception as e:
         st.error(f"Error saving portfolio: {str(e)}")
