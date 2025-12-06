@@ -1,5 +1,4 @@
 import streamlit as st
-from datetime import datetime
 from foliotrack import get_rate_between, Currency
 
 # Get list of currency codes
@@ -53,7 +52,9 @@ if st.button("⚖️ Get rate", use_container_width=True):
                 from_currency_code, to_currency_code, date=str(date_str)
             )
         except Exception as e:
-            st.error(f"Error fetching exchange rate: {e}")
+            st.error(
+                f"Error fetching exchange rate: {e}. Note that reference rates are usually updated at around 16:00 CET every day by the European Central Bank. Try to change the date."
+            )
         else:
             # Try to display common result shapes
             if isinstance(result, dict):
