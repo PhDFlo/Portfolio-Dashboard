@@ -12,7 +12,7 @@ eq_data_config = {
     "Amount to Invest": st.column_config.NumberColumn(
         "Amount to Invest", format="%.2f"
     ),
-    "Number to buy": st.column_config.NumberColumn("Number to buy", format="%.0f"),
+    "Volume to buy": st.column_config.NumberColumn("Volume to buy", format="%.0f"),
 }
 
 
@@ -31,7 +31,7 @@ def eqportfolio2df(portfolio):
                 "Actual Share": security.get("actual_share"),
                 "Final Share": security.get("final_share"),
                 "Amount to Invest": security.get("amount_to_invest"),
-                "Number to buy": security.get("number_to_buy"),
+                "Volume to buy": security.get("volume_to_buy"),
             }
         )
     return pd.DataFrame(data)

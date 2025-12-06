@@ -47,10 +47,10 @@ def test_select_and_load_file(page_file, original_dir):
             ],
             "Ticker": ["AIR.PA", "NVDA", "MC.PA"],
             "Currency": ["EUR", "USD", "EUR"],
-            "Price": [200.0, 150.0, 600.0],
-            "Actual Share": [0.8441, 0.0349, 0.1211],
+            "Price": [204.45, 177.0, 635.5],
+            "Actual Share": [0.8151, 0.0359, 0.149],
             "Target Share": [0.5, 0.2, 0.3],
-            "Quantity": [20.0, 1.0, 1.0],
+            "Volume": [17.0, 1.0, 1.0],
         }
     )
 
@@ -103,22 +103,22 @@ def test_buy_sell_security(page_file, original_dir):
 
     # Buy 2 shares of NVIDIA Corporation
     at.selectbox(key="ticker_buy_choice").set_value("NVDA").run()
-    at.number_input(key="buy_quantity").set_value(2).run()
+    at.number_input(key="buy_volume").set_value(2).run()
     at.number_input(key="buy_price").set_value(250.0).run()
     at.button(key="buy_button").click().run()
 
-    # Check that quantities have been updated
-    assert at.dataframe[0].value.set_index("Ticker")["Quantity"]["NVDA"] == 3.0, (
+    # Check that volumes have been updated
+    assert at.dataframe[0].value.set_index("Ticker")["Volume"]["NVDA"] == 3.0, (
         "Buy operation failed"
     )
 
     # Sell 1 share of Airbus SE
     at.selectbox(key="ticker_sell_choice").set_value("AIR.PA").run()
-    at.number_input(key="sell_quantity").set_value(1).run()
+    at.number_input(key="sell_volume").set_value(1).run()
     at.button(key="sell_button").click().run()
 
     # Check that quantities have been updated
-    assert at.dataframe[0].value.set_index("Ticker")["Quantity"]["AIR.PA"] == 19.0, (
+    assert at.dataframe[0].value.set_index("Ticker")["Volume"]["AIR.PA"] == 16.0, (
         "Sell operation failed"
     )
 

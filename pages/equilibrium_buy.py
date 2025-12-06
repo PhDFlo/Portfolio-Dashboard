@@ -55,7 +55,7 @@ with col1:
     ticker_input = st.text_input("Security Ticker")
     buy_price = st.number_input("Unit Price", value=0.0, format="%.4f")
 with col2:
-    quantity = st.number_input("Quantity to Buy", value=1.0, format="%.4f")
+    volume = st.number_input("Volume to Buy", value=1.0, format="%.4f")
     fee = st.number_input("Transaction Fee (€, $, ...)", value=0.0, format="%.2f")
 with col3:
     purchase_date = st.date_input("Purchase Date", value=datetime.date.today())
@@ -64,9 +64,9 @@ with col3:
         try:
             st.session_state.portfolio.buy_security(
                 ticker_input,
-                quantity,
+                volume,
                 price=buy_price,
             )
-            st.success(f"Bought {quantity} unit(s) of {ticker_input} at {buy_price}")
+            st.success(f"Bought {volume} unit(s) of {ticker_input} at {buy_price}")
         except Exception as e:
             st.error(f"Error buying security: {str(e)}")

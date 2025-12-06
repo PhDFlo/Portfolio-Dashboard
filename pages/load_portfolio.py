@@ -64,9 +64,7 @@ else:
     )
 
 # List of tickers for buy and sell
-ticker_options = [""] + [
-    security.ticker for security in st.session_state.portfolio.securities
-]
+ticker_options = [""] + [ticker for ticker in st.session_state.portfolio.securities]
 
 st.subheader("Security List")
 
@@ -102,15 +100,15 @@ with col1:
         index=1 if len(ticker_options) > 1 else 0,
         accept_new_options=True,
     )
-    quantity = st.number_input(
-        "Quantity to Buy", key="buy_quantity", value=1.0, format="%.1f", step=1.0
+    volume_buy = st.number_input(
+        "Volume to Buy", key="buy_volume", value=1.0, format="%.1f", step=1.0
     )
 
     # Set default currency and value based on selected ticker
     default_currency = st.session_state.portfolio.currency
     default_buy_price = 0.0
-    for security in st.session_state.portfolio.securities:
-        if ticker_input_buy == security.ticker:
+    for ticker, security in st.session_state.portfolio.securities.items():
+        if ticker_input_buy == ticker:
             default_currency = security.currency
             default_buy_price = security.price_in_security_currency
             break
@@ -131,8 +129,8 @@ with col2:
         index=1 if len(ticker_options) > 1 else 0,
         accept_new_options=True,
     )
-    quantity_sell = st.number_input(
-        "Quantity to Sell", key="sell_quantity", value=1.0, format="%.1f", step=1.0
+    volume_sell = st.number_input(
+        "Volume to Sell", key="sell_volume", value=1.0, format="%.1f", step=1.0
     )
 
 col1, col2 = st.columns(2)
@@ -141,12 +139,12 @@ with col1:
         try:
             st.session_state.portfolio.buy_security(
                 ticker=ticker_input_buy,
-                quantity=quantity,
+                volume=volume_buy,
                 price=buy_price,
                 currency=currency,
             )
             st.success(
-                f"Bought {quantity} unit(s) of {ticker_input_buy} at {buy_price}"
+                f"Bought {volume_buy} unit(s) of {ticker_input_buy} at {buy_price}"
             )
             st.rerun()
         except Exception as e:
@@ -157,9 +155,9 @@ with col2:
         try:
             st.session_state.portfolio.sell_security(
                 ticker=ticker_input_sell,
-                quantity=quantity_sell,
+                volume=volume_sell,
             )
-            st.success(f"Sold {quantity_sell} unit(s) of {ticker_input_sell}")
+            st.success(f"Sold {volume_sell} unit(s) of {ticker_input_sell}")
             st.rerun()
         except Exception as e:
             st.error(f"Error selling security: {str(e)}")

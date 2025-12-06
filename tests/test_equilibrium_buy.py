@@ -54,15 +54,19 @@ def test_optimize_portfolio(page_file, original_dir):
     at.switch_page(page_file)
     at.run()
 
+    # Change investment amount and minimum percentage
+    at.number_input(key="investment_amount").set_value(1000.0).run()
+    at.number_input(key="min_percent").set_value(0.95).run()
+
     # Click on the "Optimize Portfolio" button
     at.button(key="optimize_button").click().run()
 
     expected_df = pd.DataFrame(
         {
-            "Number to buy": [1, 2, 0],
+            "Volume to buy": [0, 2, 1],
         }
     )
 
     assert (
-        at.dataframe[0].value["Number to buy"].equals(expected_df["Number to buy"])
-    ), "Mismatch in 'Number to buy' column"
+        at.dataframe[0].value["Volume to buy"].equals(expected_df["Volume to buy"])
+    ), "Mismatch in 'Volume to buy' column"

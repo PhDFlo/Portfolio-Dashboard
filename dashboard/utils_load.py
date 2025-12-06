@@ -14,7 +14,7 @@ load_data_config = {
     f"Total value ({st.session_state.portfolio.symbol})": st.column_config.NumberColumn(
         f"Total value ({st.session_state.portfolio.symbol})", format="%.2f"
     ),
-    "Quantity": st.column_config.NumberColumn("Quantity", format="%.0f"),
+    "Volume": st.column_config.NumberColumn("Volume", format="%.0f"),
 }
 
 
@@ -38,10 +38,8 @@ def loadportfolio2df(portfolio):
                 "Price": security.get("price_in_security_currency"),
                 "Actual Share": security.get("actual_share"),
                 "Target Share": security.get("target_share"),
-                f"Total value ({portfolio.symbol})": security.get(
-                    "value"
-                ),
-                "Quantity": security.get("quantity"),
+                f"Total value ({portfolio.symbol})": security.get("value"),
+                "Volume": security.get("volume"),
             }
         )
     return pd.DataFrame(data)
