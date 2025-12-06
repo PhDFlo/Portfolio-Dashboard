@@ -5,6 +5,13 @@ from dashboard import eqportfolio2df, eq_data_config
 
 # Optimization parameters
 st.subheader("Optimization")
+
+selling = st.checkbox(
+    "Allow Selling Securities",
+    key="allow_selling",
+    value=False,
+)
+
 col1, col2 = st.columns(2)
 with col1:
     new_investment = st.number_input(
@@ -32,6 +39,7 @@ if st.button("🎯 Optimize Portfolio", key="optimize_button", use_container_wid
             st.session_state.portfolio,
             investment_amount=float(new_investment),
             min_percent_to_invest=float(min_percent),
+            selling=bool(selling),
         )
 
         # Display results
