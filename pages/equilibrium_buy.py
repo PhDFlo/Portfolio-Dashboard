@@ -31,11 +31,14 @@ with col2:
         format="%.2f",
     )
 
+# Initialize variables to hold results
+total_to_invest = 0.0
+
 # Optimization button and results
 if st.button("🎯 Optimize Portfolio", key="optimize_button", use_container_width=True):
     try:
         # Run optimization
-        solve_equilibrium(
+        _, total_to_invest, _ = solve_equilibrium(
             st.session_state.portfolio,
             investment_amount=float(new_investment),
             min_percent_to_invest=float(min_percent),
@@ -54,6 +57,10 @@ if "equilibrium_df" in st.session_state:
         st.session_state.equilibrium_df,
         use_container_width=True,
         column_config=eq_data_config,
+    )
+
+    st.write(
+        f"Total to Invest: {total_to_invest:.2f} {st.session_state.portfolio.symbol}"
     )
 
 # Security purchase section
