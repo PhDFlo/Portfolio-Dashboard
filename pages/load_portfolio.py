@@ -1,45 +1,15 @@
 import streamlit as st
 import pandas as pd
-import os
 from foliotrack.Portfolio import Portfolio
 from dashboard import (
     loadportfolio2df,
-    load_portfolio_from_file,
     save_portfolio_to_file,
-    get_portfolio_files,
     load_data_config,
+    side_bar_file_operations,
 )
 
-
-# Sidebar for file operations
-with st.sidebar:
-    st.header("Portfolio Files")
-
-    # File selection
-    portfolio_files = get_portfolio_files()
-    file_options = [""] + [os.path.basename(f) for f in portfolio_files]
-
-    selected_file = st.selectbox(
-        "Select Portfolio JSON",
-        options=file_options,
-        key="portfolio_file_select",
-        index=1
-        if len(file_options) > 1 and "investment_example.json" in file_options
-        else 0,
-        accept_new_options=True,
-    )
-
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("🔄 Refresh", key="refresh"):
-            st.rerun()
-
-    with col2:
-        if st.button("📂 Load", key="load") and selected_file:
-            st.session_state.portfolio = load_portfolio_from_file(
-                f"./Portfolios/{selected_file}"
-            )
-            st.rerun()
+# Side bar for file operations
+file_list = side_bar_file_operations()
 
 # Display current portfolio in editable table
 if "portfolio" not in st.session_state:
@@ -168,11 +138,9 @@ col1, col2 = st.columns(2)
 with col1:
     save_filename = st.selectbox(
         "Save as filename",
-        options=file_options,
+        options=file_list,
         key="portfolio_file_save",
-        index=1
-        if len(file_options) > 1 and "investment_example.json" in file_options
-        else 0,
+        index=1 if len(file_list) > 1 and "investment_example.json" in file_list else 0,
         accept_new_options=True,
     )
 

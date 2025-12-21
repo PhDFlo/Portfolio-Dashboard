@@ -18,14 +18,14 @@ load_data_config = {
 }
 
 
-def get_portfolio_files():
+def get_portfolio_files() -> list:
     """Get list of JSON files in Portfolios directory"""
     if not os.path.exists("./Portfolios"):
         os.makedirs("./Portfolios", exist_ok=True)
     return glob.glob("./Portfolios/*.json")
 
 
-def loadportfolio2df(portfolio):
+def loadportfolio2df(portfolio) -> pd.DataFrame:
     """Convert portfolio info to DataFrame format for display"""
     info = portfolio.get_portfolio_info()
     data = []
@@ -45,7 +45,7 @@ def loadportfolio2df(portfolio):
     return pd.DataFrame(data)
 
 
-def load_portfolio_from_file(filename):
+def load_portfolio_from_file(filename) -> Portfolio:
     """Load portfolio from JSON file"""
     try:
         portfolio = Portfolio.from_json(filename)
@@ -53,10 +53,10 @@ def load_portfolio_from_file(filename):
         return portfolio
     except Exception as e:
         st.error(f"Error loading portfolio: {str(e)}")
-        return False
+        return Portfolio()
 
 
-def save_portfolio_to_file(filename):
+def save_portfolio_to_file(filename) -> bool:
     """Save portfolio to JSON file"""
     try:
         # Ensure directory exists
@@ -67,3 +67,37 @@ def save_portfolio_to_file(filename):
     except Exception as e:
         st.error(f"Error saving portfolio: {str(e)}")
         return False
+
+
+def side_bar_file_operations(key="portfolio_file_select") -> list:
+    """Sidebar for file operations"""
+    with st.sidebar:
+        st.header("Portfolio Files")
+
+        # File selection
+        portfolio_files = get_portfolio_files()
+        file_list = [""] + [os.path.basename(f) for f in portfolio_files]
+
+        selected_file = st.selectbox(
+            "Select Portfolio JSON",
+            options=file_list,
+            key=key,
+            index=1
+            if len(file_list) > 1 and "investment_example.json" in file_list
+            else 0,
+            accept_new_options=True,
+        )
+
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("🔄 Refresh", key="refresh"):
+                st.rerun()
+
+        with col2:
+            if st.button("📂 Load", key="load") and selected_file:
+                st.session_state.portfolio = load_portfolio_from_file(
+                    f"./Portfolios/{selected_file}"
+                )
+                st.rerun()
+
+    return file_list

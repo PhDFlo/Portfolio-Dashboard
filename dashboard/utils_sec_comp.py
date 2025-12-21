@@ -14,7 +14,7 @@ plotly_colors = [
 ]
 
 
-def simulate_contract(contract):
+def simulate_contract(contract) -> tuple:
     """
     Simulate yearly portfolio value after applying gross return, Security fee and bank fee.
 
@@ -55,7 +55,7 @@ def simulate_contract(contract):
     return values, invested
 
 
-def compute_after_tax_curve(values, invested, capital_gains_tax):
+def compute_after_tax_curve(values, invested, capital_gains_tax) -> np.ndarray:
     """
     Compute after-tax portfolio value at each year, as if liquidated at that year.
 
@@ -87,7 +87,7 @@ def create_contract_form(
     bank_fee=0.005,
     capgains_tax=0.3,
     years=30,
-):
+) -> dict:
     """
     Create a contract form in the Streamlit app with default values and labels.
 

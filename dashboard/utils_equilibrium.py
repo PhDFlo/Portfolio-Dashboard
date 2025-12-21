@@ -16,7 +16,7 @@ eq_data_config = {
 }
 
 
-def eqportfolio2df(portfolio):
+def eqportfolio2df(portfolio) -> pd.DataFrame:
     """Convert portfolio info to DataFrame format for display"""
     info = portfolio.get_portfolio_info()
     data = []

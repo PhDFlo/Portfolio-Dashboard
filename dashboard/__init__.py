@@ -9,6 +9,7 @@ from .utils_load import (
     load_portfolio_from_file,
     save_portfolio_to_file,
     loadportfolio2df,
+    side_bar_file_operations,
 )
 
 from .utils_sec_comp import (
@@ -26,6 +27,7 @@ __all__ = [
     "load_portfolio_from_file",
     "save_portfolio_to_file",
     "loadportfolio2df",
+    "side_bar_file_operations",
     "plotly_colors",
     "simulate_contract",
     "compute_after_tax_curve",
