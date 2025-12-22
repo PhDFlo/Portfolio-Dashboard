@@ -27,7 +27,7 @@ with col1:
     if ticker_list != []:
         # Get historical data for all tickers in portfolio
         hist_tickers = get_historical_data(
-            ticker_list, start_date="2023-02-14", interval="1d"
+            ticker_list, start_date="2023-02-01", interval="1d"
         )
         # Forward fill missing data
         hist_tickers.ffill(inplace=True)
@@ -47,7 +47,6 @@ with col1:
         for event in hist_portfolio:
             ticker = event["ticker"]
             volume = event["volume"]
-            action = event["action"]
             date = event["date"]
 
             try:
@@ -59,7 +58,7 @@ with col1:
             col_name = f"Volume {ticker}"
 
             # Add or remove volume based on action
-            track_volume[ticker] += volume if action == "buy" else -volume
+            track_volume[ticker] += volume
             portfolio_comp.loc[date, col_name] = track_volume[ticker]
 
         # Fill volume between events
@@ -76,7 +75,7 @@ with col1:
                 total_value += vol * price
             portfolio_comp.loc[date, "Value"] = total_value
 
-    fig = px.line(
+    fig_evol = px.line(
         portfolio_comp,
         x=portfolio_comp.index,
         y="Value",
@@ -87,7 +86,43 @@ with col1:
         },
     )
 
-    st.plotly_chart(fig)
+    # Display line chart of portfolio value over time
+    st.plotly_chart(fig_evol)
+
+    # Create stacked bar chart of bought and sold volumes over time
+    go_data = []
+    df_bought_sells = pd.DataFrame(
+        0, columns=[f"Volume {t}" for t in ticker_list], index=Date
+    )
+
+    for event in hist_portfolio:
+        date = event["date"]
+        ticker = event["ticker"]
+        volume = event["volume"]
+
+        df_bought_sells.loc[date, f"Volume {ticker}"] += volume
+
+    for ticker in ticker_list:
+        go_data.append(
+            go.Bar(
+                x=df_bought_sells.index,
+                y=df_bought_sells[f"Volume {ticker}"],
+                name=ticker,
+                hoverinfo="x+name+y",
+            )
+        )
+
+    fig_bar = go.Figure(data=go_data)
+    fig_bar.update_layout(
+        xaxis_title_text="",  # xaxis label
+        yaxis_title_text="Volume acquired or sold",  # yaxis label
+        bargap=0.2,  # gap between bars of adjacent location coordinates
+        bargroupgap=0.1,  # gap between bars of the same location coordinates
+    )
+
+    # Display stacked bar chart of security volumes over time
+    st.plotly_chart(fig_bar)
+
 
 # Display target vs actual shares in donut charts
 with col2:
@@ -114,9 +149,8 @@ with col2:
 
     # Use `hole` to create a donut-like pie chart
     fig.update_traces(hole=0.4, hoverinfo="label+percent+name")
-    fig.update_layout(template="plotly")
     fig.update_layout(
-        title_text="Portfolio Target vs Actual Security Shares",
+        title_text="Target vs Actual Security Shares",
         height=700,
         # Add annotations in the center of the donut pies.
         annotations=[
@@ -137,5 +171,6 @@ with col2:
                 yanchor="middle",
             ),
         ],
+        # template="plotly",
     )
     st.plotly_chart(fig)
