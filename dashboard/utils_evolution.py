@@ -9,6 +9,9 @@ from foliotrack.Portfolio import Portfolio
 # Set pandas option to avoid future warnings
 pd.set_option("future.no_silent_downcasting", True)
 
+# Define color palette
+colors = px.colors.qualitative.Plotly
+
 
 def _get_security_historical_data(tickers: list[str], start_date: str, interval="1d"):
     """Fetch historical market data for all tickers using yfinance and forward fill missing data."""
@@ -24,6 +27,7 @@ def _get_security_historical_data(tickers: list[str], start_date: str, interval=
 def _get_portfolio_history(
     portfolio: Portfolio,
     ticker_list: list[str],
+    hist_tickers: pd.DataFrame,
     Date: pd.DatetimeIndex,
 ) -> pd.DataFrame:
     # Initialize dataframe to track portfolio composition over time
@@ -50,8 +54,19 @@ def _get_portfolio_history(
         # Fill volume between events
         portfolio_comp[f"Volume {ticker}"] = portfolio_comp[f"Volume {ticker}"].ffill()
 
-    # Fill any remaining NaN with 0
-    portfolio_comp.fillna(0, inplace=True)
+        # Fill volume remaining NaN with 0
+        portfolio_comp[f"Volume {ticker}"] = portfolio_comp[f"Volume {ticker}"].fillna(
+            0
+        )
+
+    # Compute total value
+    for date in portfolio_comp.index:
+        total_value = 0
+        for ticker in ticker_list:
+            vol = portfolio_comp.loc[date, f"Volume {ticker}"]
+            price = hist_tickers.loc[date, ("Close", ticker)]
+            total_value += vol * price
+        portfolio_comp.loc[date, "Value"] = total_value
 
     return portfolio_comp
 
@@ -72,10 +87,26 @@ def plot_pie_chart(portfolio: Portfolio, ticker_list: list[str]):
         rows=2, cols=1, specs=[[{"type": "domain"}], [{"type": "domain"}]]
     )
     fig.add_trace(
-        go.Pie(labels=ticker_list, values=df.target, name="Target", sort=False), 1, 1
+        go.Pie(
+            labels=ticker_list,
+            values=df.target,
+            name="Target",
+            marker={"colors": colors},
+            sort=False,
+        ),
+        1,
+        1,
     )
     fig.add_trace(
-        go.Pie(labels=ticker_list, values=df.actual, name="Actual", sort=False), 2, 1
+        go.Pie(
+            labels=ticker_list,
+            values=df.actual,
+            name="Actual",
+            marker={"colors": colors},
+            sort=False,
+        ),
+        2,
+        1,
     )
 
     # Use `hole` to create a donut-like pie chart
@@ -116,58 +147,51 @@ def plot_portfolio_evolution(
     hist_tickers = _get_security_historical_data(
         ticker_list, start_date=start_date, interval="1d"
     )
-    Date = hist_tickers.index
+    Date = pd.DatetimeIndex(hist_tickers.index)
 
     # Get portfolio composition over time
-    portfolio_comp = _get_portfolio_history(portfolio, ticker_list, Date)
+    portfolio_comp = _get_portfolio_history(portfolio, ticker_list, hist_tickers, Date)
 
-    # Fill volume between events
-    portfolio_comp.ffill(inplace=True)
-    # Fill any remaining NaN with 0
-    portfolio_comp.fillna(0, inplace=True)
+    # Create subplot with portfolio value evolution and stacked bar chart of bought/sold volumes
+    fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.02)
 
-    # Compute total value
-    for date in portfolio_comp.index:
-        total_value = 0
-        for ticker in ticker_list:
-            vol = portfolio_comp.loc[date, f"Volume {ticker}"]
-            price = hist_tickers.loc[date, ("Close", ticker)]
-            total_value += vol * price
-        portfolio_comp.loc[date, "Value"] = total_value
-
-    fig_evol = px.line(
-        portfolio_comp,
-        x=portfolio_comp.index,
-        y="Value",
-        title="Portfolio Value Evolution",
-        labels={
-            "Date": "",
-            "Value": f"Portfolio Value ({portfolio.currency})",
-        },
+    fig.add_trace(
+        go.Scatter(
+            x=portfolio_comp.index,
+            y=portfolio_comp["Value"],
+            name="Portfolio Value",
+            hoverinfo="x+y",
+            marker={"color": "purple"},
+        ),
+        row=1,
+        col=1,
     )
 
-    # Display line chart of portfolio value over time
-    st.plotly_chart(fig_evol)
-
     # Create stacked bar chart of bought and sold volumes over time
-    go_data = []
     for ticker in ticker_list:
-        go_data.append(
+        fig.add_trace(
             go.Bar(
                 x=portfolio_comp.index,
                 y=portfolio_comp[f"Var {ticker}"],
                 name=ticker,
                 hoverinfo="x+name+y",
-            )
+                marker={
+                    "color": colors[ticker_list.index(ticker)],
+                    "line": {"width": 3.0, "color": colors[ticker_list.index(ticker)]},
+                },
+            ),
+            row=2,
+            col=1,
         )
 
-    fig_bar = go.Figure(data=go_data)
-    fig_bar.update_layout(
-        xaxis_title_text="",  # xaxis label
-        yaxis_title_text="Volume acquired or sold",  # yaxis label
-        bargap=0.2,  # gap between bars of adjacent location coordinates
-        bargroupgap=0.1,  # gap between bars of the same location coordinates
+    fig.update_layout(
+        height=800,
+        title_text="Portfolio Time Evolution",
+        yaxis_title=f"Portfolio Value ({st.session_state.portfolio.symbol})",
+        yaxis2_title="Security Volumes",
+        yaxis=dict(domain=[0.3, 1.0]),
+        yaxis2=dict(domain=[0.0, 0.3]),
     )
 
     # Display stacked bar chart of security volumes over time
-    st.plotly_chart(fig_bar)
+    st.plotly_chart(fig)
