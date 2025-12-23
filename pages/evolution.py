@@ -44,17 +44,23 @@ with col1:
             event["date"] for event in st.session_state.portfolio.history
         )
 
+        from datetime import datetime
+
+        # Adjust earliest date if it's before the selected start date
+        if datetime.strptime(earliest_date, "%Y-%m-%d").date() > start_date:
+            earliest_date = start_date
+
+        print(earliest_date)
         # Get historical data for all tickers in portfolio
         hist_tickers = get_security_historical_data(
             ticker_list, start_date=earliest_date, interval="1d"
         )
-        Date = pd.DatetimeIndex(hist_tickers.index)
 
         plot_portfolio_evolution(
             portfolio=st.session_state.portfolio,
             ticker_list=ticker_list,
             hist_tickers=hist_tickers,
-            Date=Date,
+            Date=pd.DatetimeIndex(hist_tickers.index),
             start_date=start_date,
             end_date=end_date,
         )

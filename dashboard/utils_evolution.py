@@ -193,7 +193,7 @@ def plot_portfolio_evolution(
         height=800,
         title_text="Portfolio Time Evolution",
         yaxis_title=f"Portfolio Value ({st.session_state.portfolio.symbol})",
-        yaxis2_title="Security Volumes",
+        yaxis2_title="Security Volumes Exchanges, Buy (+) / Sell (-)",
         yaxis=dict(domain=[0.3, 1.0]),
         yaxis2=dict(domain=[0.0, 0.3]),
     )
