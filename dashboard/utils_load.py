@@ -49,7 +49,6 @@ def load_portfolio_from_file(filename) -> Portfolio:
     """Load portfolio from JSON file"""
     try:
         portfolio = Portfolio.from_json(filename)
-        st.success(f"Portfolio loaded from {filename}")
         return portfolio
     except Exception as e:
         st.error(f"Error loading portfolio: {str(e)}")

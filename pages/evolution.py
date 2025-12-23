@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from datetime import datetime
 from dashboard import (
     side_bar_file_operations,
 )
@@ -14,17 +15,14 @@ from dashboard.utils_evolution import (
 # Side bar for file operations
 side_bar_file_operations()
 
-# Sidebar input
-start_date = st.sidebar.date_input(
-    "Start Date (plotting)",
-    format="YYYY-MM-DD",
-    value=pd.to_datetime("2023-01-01"),
+min_y_exchange = st.sidebar.number_input(
+    "Min value for buy/sold (plotting)",
+    value=-5,
 )
 
-end_date = st.sidebar.date_input(
-    "End Date (plotting)",
-    format="YYYY-MM-DD",
-    value=pd.to_datetime("today"),
+max_y_exchange = st.sidebar.number_input(
+    "Max value for buy/sold (plotting)",
+    value=20,
 )
 
 # Display current portfolio in editable table
@@ -36,24 +34,15 @@ ticker_list = [ticker for ticker in st.session_state.portfolio.securities]
 
 col1, col2 = st.columns([3, 1])
 
-# Display portfolio value evolution over time
-with col1:
-    if ticker_list != []:
-        # Find the earliest date in portfolio history
-        earliest_date = min(
-            event["date"] for event in st.session_state.portfolio.history
-        )
+# If there is at least one ticker
+if ticker_list != []:
+    # Display portfolio value evolution over time
+    with col1:
+        start_date = min(event["date"] for event in st.session_state.portfolio.history)
 
-        from datetime import datetime
-
-        # Adjust earliest date if it's before the selected start date
-        if datetime.strptime(earliest_date, "%Y-%m-%d").date() > start_date:
-            earliest_date = start_date
-
-        print(earliest_date)
         # Get historical data for all tickers in portfolio
         hist_tickers = get_security_historical_data(
-            ticker_list, start_date=earliest_date, interval="1d"
+            ticker_list, start_date=start_date, interval="1d"
         )
 
         plot_portfolio_evolution(
@@ -61,10 +50,10 @@ with col1:
             ticker_list=ticker_list,
             hist_tickers=hist_tickers,
             Date=pd.DatetimeIndex(hist_tickers.index),
-            start_date=start_date,
-            end_date=end_date,
+            min_y_exchange=min_y_exchange,
+            max_y_exchange=max_y_exchange,
         )
 
-# Display target vs actual shares in donut charts
-with col2:
-    plot_pie_chart(portfolio=st.session_state.portfolio, ticker_list=ticker_list)
+    # Display target vs actual shares in donut charts
+    with col2:
+        plot_pie_chart(portfolio=st.session_state.portfolio, ticker_list=ticker_list)

@@ -34,7 +34,7 @@ def _get_portfolio_history(
     portfolio_comp = pd.DataFrame(
         columns=[f"Volume {t}" for t in ticker_list]
         + [f"Var {t}" for t in ticker_list]
-        + ["Value"],
+        + ["Open", "Low", "High", "Close"],
         index=Date,
     )
 
@@ -67,14 +67,38 @@ def _get_portfolio_history(
             0
         )
 
+    # Setup progression bar for large data
+    progress_text = "Computation of portfolio evolution. Please wait."
+    my_bar = st.progress(0.0, text=progress_text)
+    nb_dates = len(Date)
+
     # Compute total value
-    for date in Date:
-        total_value = 0
+    for i, date in enumerate(Date):
+        # Compute portfolio values
+        total_value = {"Open": 0, "Low": 0, "High": 0, "Close": 0}
         for ticker in ticker_list:
             vol = portfolio_comp.loc[date, f"Volume {ticker}"]
-            price = hist_tickers.loc[date, ("Close", ticker)]
-            total_value += vol * price
-        portfolio_comp.loc[date, "Value"] = total_value
+            open = hist_tickers.loc[date, ("Open", ticker)]
+            low = hist_tickers.loc[date, ("Low", ticker)]
+            high = hist_tickers.loc[date, ("High", ticker)]
+            close = hist_tickers.loc[date, ("Close", ticker)]
+
+            # Low and high porfolio prices are estimated as the sum of min and max of each security.
+            # This is exagerated as min and max values may not occur at the same time during the day.
+            total_value["Open"] += vol * open
+            total_value["Low"] += vol * low
+            total_value["High"] += vol * high
+            total_value["Close"] += vol * close
+
+        portfolio_comp.loc[date, "Open"] = total_value["Open"]
+        portfolio_comp.loc[date, "Low"] = total_value["Low"]
+        portfolio_comp.loc[date, "High"] = total_value["High"]
+        portfolio_comp.loc[date, "Close"] = total_value["Close"]
+
+        # Progress bar evolution
+        my_bar.progress(i / nb_dates, text=progress_text)
+
+    my_bar.empty()
 
     return portfolio_comp
 
@@ -151,22 +175,23 @@ def plot_portfolio_evolution(
     ticker_list: list[str],
     hist_tickers: pd.DataFrame,
     Date: pd.DatetimeIndex,
-    start_date: str,
-    end_date: str,
+    min_y_exchange: float,
+    max_y_exchange: float,
 ):
     # Get portfolio composition over time
     portfolio_comp = _get_portfolio_history(portfolio, ticker_list, hist_tickers, Date)
 
     # Create subplot with portfolio value evolution and stacked bar chart of bought/sold volumes
-    fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.02)
+    fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.25)
 
     fig.add_trace(
-        go.Scatter(
+        go.Candlestick(
             x=portfolio_comp.index,
-            y=portfolio_comp["Value"],
-            name="Portfolio Value",
-            hoverinfo="x+y",
-            marker={"color": "purple"},
+            open=portfolio_comp["Open"],
+            high=portfolio_comp["High"],
+            low=portfolio_comp["Low"],
+            close=portfolio_comp["Close"],
+            name="Portfolio value",
         ),
         row=1,
         col=1,
@@ -194,12 +219,13 @@ def plot_portfolio_evolution(
         title_text="Portfolio Time Evolution",
         yaxis_title=f"Portfolio Value ({st.session_state.portfolio.symbol})",
         yaxis2_title="Security Volumes Exchanges, Buy (+) / Sell (-)",
-        yaxis=dict(domain=[0.3, 1.0]),
-        yaxis2=dict(domain=[0.0, 0.3]),
+        yaxis=dict(domain=[0.4, 1.0]),
+        yaxis2=dict(domain=[0.0, 0.2]),
     )
 
-    # Set x-axis range to start_date to the last date in Date
-    fig.update_xaxes(range=[start_date, end_date])
+    # Set y-axis range
+    fig["layout"]["yaxis"].update(range=[0, max(portfolio_comp["High"])])
+    fig["layout"]["yaxis2"].update(range=[min_y_exchange, max_y_exchange])
 
     # Display stacked bar chart of security volumes over time
     st.plotly_chart(fig)
