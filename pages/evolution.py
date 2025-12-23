@@ -1,17 +1,13 @@
 import streamlit as st
+import pandas as pd
 from dashboard import (
     side_bar_file_operations,
 )
 from foliotrack.Portfolio import Portfolio
 from dashboard.utils_evolution import (
-    get_historical_data,
     plot_pie_chart,
     plot_portfolio_evolution,
 )
-import pandas as pd
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import plotly.express as px
 
 
 # Side bar for file operations

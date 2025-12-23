@@ -6,13 +6,54 @@ from plotly.subplots import make_subplots
 import plotly.express as px
 from foliotrack.Portfolio import Portfolio
 
+# Set pandas option to avoid future warnings
+pd.set_option("future.no_silent_downcasting", True)
 
-def get_historical_data(tickers: list[str], start_date: str, interval="1d"):
-    """Fetch historical market data for all tickers using yfinance"""
+
+def _get_security_historical_data(tickers: list[str], start_date: str, interval="1d"):
+    """Fetch historical market data for all tickers using yfinance and forward fill missing data."""
     stock = yf.Tickers(tickers)
 
     hist = stock.history(start=start_date, period="max", interval=interval)
+
+    # Fill missing data with values from previous dates
+    hist.ffill(inplace=True)
     return hist
+
+
+def _get_portfolio_history(
+    portfolio: Portfolio,
+    ticker_list: list[str],
+    Date: pd.DatetimeIndex,
+) -> pd.DataFrame:
+    # Initialize dataframe to track portfolio composition over time
+    portfolio_comp = pd.DataFrame(
+        columns=[f"Volume {t}" for t in ticker_list]
+        + [f"Var {t}" for t in ticker_list]
+        + ["Value"],
+        index=Date,
+    )
+
+    # Initialize volume tracker
+    count_volume = {ticker: 0 for ticker in ticker_list}
+
+    for event in portfolio.history:
+        ticker = event["ticker"]
+        volume = event["volume"]
+        date = event["date"]
+
+        # Add or remove volume based on action
+        count_volume[ticker] += volume
+        portfolio_comp.loc[date, f"Volume {ticker}"] = count_volume[ticker]
+        portfolio_comp.loc[date, f"Var {ticker}"] = volume
+
+        # Fill volume between events
+        portfolio_comp[f"Volume {ticker}"] = portfolio_comp[f"Volume {ticker}"].ffill()
+
+    # Fill any remaining NaN with 0
+    portfolio_comp.fillna(0, inplace=True)
+
+    return portfolio_comp
 
 
 def plot_pie_chart(portfolio: Portfolio, ticker_list: list[str]):
@@ -72,41 +113,13 @@ def plot_portfolio_evolution(
     start_date: str,
 ):
     # Get historical data for all tickers in portfolio
-    hist_tickers = get_historical_data(
+    hist_tickers = _get_security_historical_data(
         ticker_list, start_date=start_date, interval="1d"
     )
-
-    # Forward fill missing data
-    hist_tickers.ffill(inplace=True)
     Date = hist_tickers.index
 
-    # Initialize dataframe to track portfolio composition over time
-    portfolio_comp = pd.DataFrame(
-        columns=[f"Volume {t}" for t in ticker_list] + ["Value"], index=Date
-    )
-
-    # Track volume of each security over time
-    hist_portfolio = portfolio.history
-
-    # Initialize volume tracker
-    track_volume = {ticker: 0 for ticker in ticker_list}
-
-    for event in hist_portfolio:
-        ticker = event["ticker"]
-        volume = event["volume"]
-        date = event["date"]
-
-        try:
-            price = hist_tickers.loc[date, ("Close", ticker)]
-        except KeyError:
-            # Skip if date not found in historical data
-            continue
-
-        col_name = f"Volume {ticker}"
-
-        # Add or remove volume based on action
-        track_volume[ticker] += volume
-        portfolio_comp.loc[date, col_name] = track_volume[ticker]
+    # Get portfolio composition over time
+    portfolio_comp = _get_portfolio_history(portfolio, ticker_list, Date)
 
     # Fill volume between events
     portfolio_comp.ffill(inplace=True)
@@ -138,22 +151,11 @@ def plot_portfolio_evolution(
 
     # Create stacked bar chart of bought and sold volumes over time
     go_data = []
-    df_bought_sells = pd.DataFrame(
-        0, columns=[f"Volume {t}" for t in ticker_list], index=Date
-    )
-
-    for event in hist_portfolio:
-        date = event["date"]
-        ticker = event["ticker"]
-        volume = event["volume"]
-
-        df_bought_sells.loc[date, f"Volume {ticker}"] += volume
-
     for ticker in ticker_list:
         go_data.append(
             go.Bar(
-                x=df_bought_sells.index,
-                y=df_bought_sells[f"Volume {ticker}"],
+                x=portfolio_comp.index,
+                y=portfolio_comp[f"Var {ticker}"],
                 name=ticker,
                 hoverinfo="x+name+y",
             )
