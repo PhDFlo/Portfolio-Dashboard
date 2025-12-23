@@ -5,6 +5,7 @@ from dashboard import (
 )
 from foliotrack.Portfolio import Portfolio
 from dashboard.utils_evolution import (
+    get_security_historical_data,
     plot_pie_chart,
     plot_portfolio_evolution,
 )
@@ -15,9 +16,15 @@ side_bar_file_operations()
 
 # Sidebar input
 start_date = st.sidebar.date_input(
-    "Start Date",
+    "Start Date (plotting)",
     format="YYYY-MM-DD",
     value=pd.to_datetime("2023-01-01"),
+)
+
+end_date = st.sidebar.date_input(
+    "End Date (plotting)",
+    format="YYYY-MM-DD",
+    value=pd.to_datetime("today"),
 )
 
 # Display current portfolio in editable table
@@ -32,10 +39,24 @@ col1, col2 = st.columns([3, 1])
 # Display portfolio value evolution over time
 with col1:
     if ticker_list != []:
+        # Find the earliest date in portfolio history
+        earliest_date = min(
+            event["date"] for event in st.session_state.portfolio.history
+        )
+
+        # Get historical data for all tickers in portfolio
+        hist_tickers = get_security_historical_data(
+            ticker_list, start_date=earliest_date, interval="1d"
+        )
+        Date = pd.DatetimeIndex(hist_tickers.index)
+
         plot_portfolio_evolution(
             portfolio=st.session_state.portfolio,
             ticker_list=ticker_list,
-            start_date=str(start_date),
+            hist_tickers=hist_tickers,
+            Date=Date,
+            start_date=start_date,
+            end_date=end_date,
         )
 
 # Display target vs actual shares in donut charts

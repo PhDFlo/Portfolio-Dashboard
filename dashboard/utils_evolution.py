@@ -13,7 +13,7 @@ pd.set_option("future.no_silent_downcasting", True)
 colors = px.colors.qualitative.Plotly
 
 
-def _get_security_historical_data(tickers: list[str], start_date: str, interval="1d"):
+def get_security_historical_data(tickers: list[str], start_date: str, interval="1d"):
     """Fetch historical market data for all tickers using yfinance and forward fill missing data."""
     stock = yf.Tickers(tickers)
 
@@ -51,8 +51,16 @@ def _get_portfolio_history(
         portfolio_comp.loc[date, f"Volume {ticker}"] = count_volume[ticker]
         portfolio_comp.loc[date, f"Var {ticker}"] = volume
 
+    # Verify that all volumes are filled
+    for ticker in ticker_list:
+        portfolio_comp.loc[portfolio_comp.index[-1], f"Volume {ticker}"] = count_volume[
+            ticker
+        ]
+
         # Fill volume between events
-        portfolio_comp[f"Volume {ticker}"] = portfolio_comp[f"Volume {ticker}"].ffill()
+        portfolio_comp[f"Volume {ticker}"] = portfolio_comp[f"Volume {ticker}"].ffill(
+            axis=0
+        )
 
         # Fill volume remaining NaN with 0
         portfolio_comp[f"Volume {ticker}"] = portfolio_comp[f"Volume {ticker}"].fillna(
@@ -60,7 +68,7 @@ def _get_portfolio_history(
         )
 
     # Compute total value
-    for date in portfolio_comp.index:
+    for date in Date:
         total_value = 0
         for ticker in ticker_list:
             vol = portfolio_comp.loc[date, f"Volume {ticker}"]
@@ -133,7 +141,7 @@ def plot_pie_chart(portfolio: Portfolio, ticker_list: list[str]):
                 yanchor="middle",
             ),
         ],
-        # template="plotly",
+        showlegend=False,
     )
     st.plotly_chart(fig)
 
@@ -141,14 +149,11 @@ def plot_pie_chart(portfolio: Portfolio, ticker_list: list[str]):
 def plot_portfolio_evolution(
     portfolio: Portfolio,
     ticker_list: list[str],
+    hist_tickers: pd.DataFrame,
+    Date: pd.DatetimeIndex,
     start_date: str,
+    end_date: str,
 ):
-    # Get historical data for all tickers in portfolio
-    hist_tickers = _get_security_historical_data(
-        ticker_list, start_date=start_date, interval="1d"
-    )
-    Date = pd.DatetimeIndex(hist_tickers.index)
-
     # Get portfolio composition over time
     portfolio_comp = _get_portfolio_history(portfolio, ticker_list, hist_tickers, Date)
 
@@ -192,6 +197,9 @@ def plot_portfolio_evolution(
         yaxis=dict(domain=[0.3, 1.0]),
         yaxis2=dict(domain=[0.0, 0.3]),
     )
+
+    # Set x-axis range to start_date to the last date in Date
+    fig.update_xaxes(range=[start_date, end_date])
 
     # Display stacked bar chart of security volumes over time
     st.plotly_chart(fig)
