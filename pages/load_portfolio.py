@@ -31,12 +31,13 @@ if "portfolio" not in st.session_state:
     # Ensure a portfolio object exists in session state for pages run standalone
     st.session_state.portfolio = Portfolio()
 
+# List of tickers
+ticker_list = [ticker for ticker in st.session_state.portfolio.securities]
 
 tab1, tab2 = st.tabs(["Display statistics", "Table"])
 
+# Display Portfolio statistics plots
 with tab1:
-    ticker_list = [ticker for ticker in st.session_state.portfolio.securities]
-
     col1, col2 = st.columns([3, 1])
 
     # If there is at least one ticker
@@ -68,6 +69,7 @@ with tab1:
             )
 
 
+# Portfolio table
 with tab2:
     if st.session_state.portfolio.securities:
         st.session_state.df = loadportfolio2df(st.session_state.portfolio)
