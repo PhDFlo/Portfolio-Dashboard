@@ -67,11 +67,6 @@ def _get_portfolio_history(
             0
         )
 
-    # Setup progression bar for large data
-    progress_text = "Computation of portfolio evolution. Please wait."
-    my_bar = st.progress(0.0, text=progress_text)
-    nb_dates = len(Date)
-
     # Compute total value
     for i, date in enumerate(Date):
         # Compute portfolio values
@@ -94,11 +89,6 @@ def _get_portfolio_history(
         portfolio_comp.loc[date, "Low"] = total_value["Low"]
         portfolio_comp.loc[date, "High"] = total_value["High"]
         portfolio_comp.loc[date, "Close"] = total_value["Close"]
-
-        # Progress bar evolution
-        my_bar.progress(i / nb_dates, text=progress_text)
-
-    my_bar.empty()
 
     return portfolio_comp
 

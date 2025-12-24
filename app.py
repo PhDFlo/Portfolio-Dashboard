@@ -28,12 +28,6 @@ equil = st.Page(
     icon="🔨",
 )
 
-evol = st.Page(
-    "pages/evolution.py",
-    title="Portfolio Evolution",
-    icon="📈",
-)
-
 compare = st.Page(
     "pages/compare_securities.py",
     title="Compare Securities",
@@ -57,7 +51,6 @@ pg = st.navigation(
         "Manage": [
             load,
             equil,
-            evol,
         ],
         "Tools": [
             compare,
