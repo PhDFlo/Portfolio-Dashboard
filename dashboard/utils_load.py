@@ -155,7 +155,12 @@ def buy_section(ticker_options):
             ].price_in_security_currency
 
         volume_buy = st.number_input(
-            "Volume to Buy", key="buy_volume", value=1.0, format="%.1f", step=1.0
+            "Volume to Buy",
+            key="buy_volume",
+            value=1.0,
+            min_value=0.0,
+            format="%.1f",
+            step=1.0,
         )
 
     with col2:
@@ -164,7 +169,11 @@ def buy_section(ticker_options):
         )
 
         buy_price = st.number_input(
-            "Unit Price", key="buy_price", value=default_buy_price, format="%.2f"
+            "Unit Price",
+            key="buy_price",
+            value=default_buy_price,
+            min_value=0.0,
+            format="%.2f",
         )
 
     if st.button("📥 Buy Security", key="buy_button", use_container_width=True):
@@ -178,7 +187,7 @@ def buy_section(ticker_options):
             st.success(
                 f"Bought {volume_buy} unit(s) of {ticker_input_buy} at {buy_price}"
             )
-            st.rerun()
+            # st.rerun()
         except Exception as e:
             st.error(f"Error buying security: {str(e)}")
 
@@ -193,7 +202,12 @@ def sell_section(ticker_options):
         accept_new_options=True,
     )
     volume_sell = st.number_input(
-        "Volume to Sell", key="sell_volume", value=1.0, format="%.1f", step=1.0
+        "Volume to Sell",
+        key="sell_volume",
+        value=1.0,
+        min_value=0.0,
+        format="%.1f",
+        step=1.0,
     )
 
     if st.button("📤 Sell Security", key="sell_button", use_container_width=True):
@@ -203,7 +217,7 @@ def sell_section(ticker_options):
                 volume=volume_sell,
             )
             st.success(f"Sold {volume_sell} unit(s) of {ticker_input_sell}")
-            st.rerun()
+            # st.rerun()
         except Exception as e:
             st.error(f"Error selling security: {str(e)}")
 
