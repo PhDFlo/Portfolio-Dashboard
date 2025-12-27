@@ -45,6 +45,7 @@ def loadportfolio2df(portfolio) -> pd.DataFrame:
     return pd.DataFrame(data)
 
 
+@st.cache_data
 def load_portfolio_from_file(filename) -> Portfolio:
     """Load portfolio from JSON file"""
     try:
@@ -68,6 +69,18 @@ def save_portfolio_to_file(filename) -> bool:
         return False
 
 
+# Put fragment to avoid reloading the full page each time selectbox value is changed
+@st.fragment
+def _selectbox_file(file_list, key) -> str:
+    return st.selectbox(
+        "Select Portfolio JSON",
+        options=file_list,
+        key=key,
+        index=1 if len(file_list) > 1 and "investment_example.json" in file_list else 0,
+        accept_new_options=True,
+    )
+
+
 def side_bar_file_operations(key="portfolio_file_select") -> list:
     """Sidebar for file operations"""
     with st.sidebar:
@@ -77,15 +90,7 @@ def side_bar_file_operations(key="portfolio_file_select") -> list:
         portfolio_files = get_portfolio_files()
         file_list = [""] + [os.path.basename(f) for f in portfolio_files]
 
-        selected_file = st.selectbox(
-            "Select Portfolio JSON",
-            options=file_list,
-            key=key,
-            index=1
-            if len(file_list) > 1 and "investment_example.json" in file_list
-            else 0,
-            accept_new_options=True,
-        )
+        selected_file = _selectbox_file(file_list, key)
 
         col1, col2 = st.columns(2)
         with col1:
