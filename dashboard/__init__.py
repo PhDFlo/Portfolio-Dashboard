@@ -10,6 +10,10 @@ from .utils_load import (
     save_portfolio_to_file,
     loadportfolio2df,
     side_bar_file_operations,
+    table_section,
+    buy_section,
+    sell_section,
+    save_section,
 )
 
 from .utils_sec_comp import (
@@ -17,6 +21,12 @@ from .utils_sec_comp import (
     simulate_contract,
     compute_after_tax_curve,
     create_contract_form,
+)
+
+from .utils_evolution import (
+    get_security_historical_data,
+    plot_pie_chart,
+    plot_portfolio_evolution,
 )
 
 __all__ = [
@@ -28,8 +38,15 @@ __all__ = [
     "save_portfolio_to_file",
     "loadportfolio2df",
     "side_bar_file_operations",
+    "table_section",
+    "buy_section",
+    "sell_section",
+    "save_section",
     "plotly_colors",
     "simulate_contract",
     "compute_after_tax_curve",
     "create_contract_form",
+    "get_security_historical_data",
+    "plot_pie_chart",
+    "plot_portfolio_evolution",
 ]
