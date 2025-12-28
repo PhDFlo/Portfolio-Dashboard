@@ -1,6 +1,7 @@
 from .utils_equilibrium import (
     eq_data_config,
     eqportfolio2df,
+    plot_equilibrium,
 )
 
 from .utils_load import (
@@ -28,6 +29,7 @@ from .utils_evolution import (
 __all__ = [
     "eq_data_config",
     "eqportfolio2df",
+    "plot_equilibrium",
     "load_data_config",
     "get_portfolio_files",
     "load_portfolio_from_file",

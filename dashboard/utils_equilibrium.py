@@ -1,5 +1,8 @@
 import streamlit as st
 import pandas as pd
+import datetime
+from foliotrack.Equilibrate import solve_equilibrium
+from .utils_load import _buy_box, _sell_box, _save_box
 
 eq_data_config = {
     "Name": st.column_config.TextColumn("Name"),
@@ -35,3 +38,79 @@ def eqportfolio2df(portfolio) -> pd.DataFrame:
             }
         )
     return pd.DataFrame(data)
+
+
+@st.fragment
+def plot_equilibrium(new_investment, min_percent, selling, ticker_options, file_list):
+    # Initialize variables
+    total_to_invest = 0
+
+    # Create empty dataframe with proper structure
+    if st.session_state.portfolio.securities:
+        equilibrium_df = eqportfolio2df(st.session_state.portfolio)
+    else:
+        equilibrium_df = pd.DataFrame(
+            {
+                "Name": [""],
+                "Ticker": [""],
+                "Currency": ["EUR"],
+                "Price": [0.0],
+                "Target Share": [0.0],
+                "Actual Share": [0.0],
+                "Final Share": [0.0],
+                "Amount to invest": [0.0],
+                "Volume to buy": [0.0],
+            }
+        )
+
+    if st.button(
+        "🎯 Optimize Portfolio", key="optimize_button", use_container_width=True
+    ):
+        try:
+            # Run optimization
+            _, total_to_invest, _ = solve_equilibrium(
+                st.session_state.portfolio,
+                investment_amount=float(new_investment),
+                min_percent_to_invest=float(min_percent),
+                selling=bool(selling),
+            )
+
+            st.session_state.optim_ran = True
+
+            st.rerun(scope="fragment")
+
+            # Display results
+            # equilibrium_df = eqportfolio2df(st.session_state.portfolio)
+
+        except Exception as e:
+            st.error(f"Error during optimization: {str(e)}")
+
+    if "optim_ran" in st.session_state:
+        st.dataframe(
+            equilibrium_df,
+            use_container_width=True,
+            column_config=eq_data_config,
+        )
+
+        st.write(
+            f"Total to Invest: {total_to_invest:.2f} {st.session_state.portfolio.symbol}"
+        )
+
+    # Buy and sell section
+    col_buy, col_sell = st.columns(2)
+
+    # Buy security
+    with col_buy:
+        st.subheader("Buy Security")
+        _buy_box(ticker_options)
+
+    # Sell security
+    with col_sell:
+        st.subheader("Sell Security")
+        _sell_box(ticker_options)
+
+    # Save portfolio section
+    st.subheader("Save Portfolio")
+    col_save, _ = st.columns(2)
+    with col_save:
+        _save_box(file_list)

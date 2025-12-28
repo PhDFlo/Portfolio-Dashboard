@@ -10,7 +10,7 @@ from dashboard import (
 )
 
 # Side bar for file operations
-file_list = side_bar_file_operations()
+st.session_state.file_list = side_bar_file_operations()
 
 min_y_exchange = st.sidebar.number_input(
     "Min value for buy/sold (plotting)",
@@ -57,7 +57,7 @@ if ticker_list != []:
         plot_pie_chart(portfolio=st.session_state.portfolio, ticker_list=ticker_list)
 
 # List of tickers for buy and sell
-ticker_options = [""] + ticker_list
+st.session_state.ticker_options = [""] + ticker_list
 
 st.subheader("Security List")
-table_section(ticker_list, file_list)
+table_section(st.session_state.ticker_options, st.session_state.file_list)

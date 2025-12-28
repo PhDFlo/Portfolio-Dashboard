@@ -1,7 +1,5 @@
 import streamlit as st
-from foliotrack.Equilibrate import solve_equilibrium
-import datetime
-from dashboard import eqportfolio2df, eq_data_config
+from dashboard import plot_equilibrium
 
 # Optimization parameters
 st.subheader("Optimization")
@@ -31,57 +29,17 @@ with col2:
         format="%.2f",
     )
 
-# Initialize variables to hold results
-total_to_invest = 0.0
+# List of tickers for buy and sell
+if "ticker_options" not in st.session_state:
+    st.session_state.ticker_options = [""]
+    st.session_state.file_list = [""]
+
 
 # Optimization button and results
-if st.button("🎯 Optimize Portfolio", key="optimize_button", use_container_width=True):
-    try:
-        # Run optimization
-        _, total_to_invest, _ = solve_equilibrium(
-            st.session_state.portfolio,
-            investment_amount=float(new_investment),
-            min_percent_to_invest=float(min_percent),
-            selling=bool(selling),
-        )
-
-        # Display results
-        st.session_state.equilibrium_df = eqportfolio2df(st.session_state.portfolio)
-
-    except Exception as e:
-        st.error(f"Error during optimization: {str(e)}")
-
-
-if "equilibrium_df" in st.session_state:
-    st.dataframe(
-        st.session_state.equilibrium_df,
-        use_container_width=True,
-        column_config=eq_data_config,
-    )
-
-    st.write(
-        f"Total to Invest: {total_to_invest:.2f} {st.session_state.portfolio.symbol}"
-    )
-
-# Security purchase section
-st.subheader("Buy Security")
-col1, col2, col3 = st.columns(3)
-with col1:
-    ticker_input = st.text_input("Security Ticker")
-    buy_price = st.number_input("Unit Price", value=0.0, format="%.4f")
-with col2:
-    volume = st.number_input("Volume to Buy", value=1.0, format="%.4f")
-    fee = st.number_input("Transaction Fee (€, $, ...)", value=0.0, format="%.2f")
-with col3:
-    purchase_date = st.date_input("Purchase Date", value=datetime.date.today())
-    st.write("")  # Add spacing
-    if st.button("💸 Buy Security"):
-        try:
-            st.session_state.portfolio.buy_security(
-                ticker_input,
-                volume,
-                price=buy_price,
-            )
-            st.success(f"Bought {volume} unit(s) of {ticker_input} at {buy_price}")
-        except Exception as e:
-            st.error(f"Error buying security: {str(e)}")
+plot_equilibrium(
+    new_investment,
+    min_percent,
+    selling,
+    st.session_state.ticker_options,
+    st.session_state.file_list,
+)
