@@ -25,7 +25,13 @@ load = st.Page(
 equil = st.Page(
     "pages/equilibrium_buy.py",
     title="Equilibrium, Buy & Export",
-    icon="🔨",
+    icon="🎛️",
+)
+
+display = st.Page(
+    "pages/display_portfolio.py",
+    title="Display Portfolio",
+    icon="📺",
 )
 
 compare = st.Page(
@@ -51,6 +57,7 @@ pg = st.navigation(
         "Manage": [
             load,
             equil,
+            display,
         ],
         "Tools": [
             compare,
