@@ -25,7 +25,7 @@ def get_portfolio_files() -> list:
     return glob.glob("./Portfolios/*.json")
 
 
-def loadportfolio2df(portfolio) -> pd.DataFrame:
+def _portfolio2df(portfolio) -> pd.DataFrame:
     """Convert portfolio info to DataFrame format for display"""
     info = portfolio.get_portfolio_info()
     data = []
@@ -107,32 +107,7 @@ def side_bar_file_operations(key="portfolio_file_select") -> list:
     return file_list
 
 
-@st.fragment
-def table_section():
-    st.data_editor(
-        st.session_state.df,
-        num_rows="dynamic",
-        use_container_width=True,
-        column_config=load_data_config,
-        key="portfolio_editor",
-    )
-
-    # Update security prices
-    if st.button(
-        "💰 Update Securities Price",
-        key="update_securities_price",
-        use_container_width=True,
-    ):
-        try:
-            st.session_state.portfolio.update_portfolio()
-            st.success("Security prices updated!")
-            # st.rerun()
-        except Exception as e:
-            st.error(f"Error updating prices: {str(e)}")
-
-
-@st.fragment
-def buy_section(ticker_options):
+def _buy_box(ticker_options):
     col1, col2 = st.columns(2)
     with col1:
         ticker_input_buy = st.selectbox(
@@ -187,21 +162,20 @@ def buy_section(ticker_options):
             st.success(
                 f"Bought {volume_buy} unit(s) of {ticker_input_buy} at {buy_price}"
             )
-            # st.rerun()
+            st.rerun(scope="fragment")
         except Exception as e:
             st.error(f"Error buying security: {str(e)}")
 
 
-@st.fragment
-def sell_section(ticker_options):
-    ticker_input_sell = st.selectbox(
+def _sell_box(ticker_options):
+    tickers = st.selectbox(
         "Security ticker to sell",
         options=ticker_options,
         key="ticker_sell_choice",
         index=1 if len(ticker_options) > 1 else 0,
         accept_new_options=True,
     )
-    volume_sell = st.number_input(
+    volumes = st.number_input(
         "Volume to Sell",
         key="sell_volume",
         value=1.0,
@@ -213,17 +187,16 @@ def sell_section(ticker_options):
     if st.button("📤 Sell Security", key="sell_button", use_container_width=True):
         try:
             st.session_state.portfolio.sell_security(
-                ticker=ticker_input_sell,
-                volume=volume_sell,
+                ticker=tickers,
+                volume=volumes,
             )
-            st.success(f"Sold {volume_sell} unit(s) of {ticker_input_sell}")
-            # st.rerun()
+            st.success(f"Sold {volumes} unit(s) of {tickers}")
+            st.rerun(scope="fragment")
         except Exception as e:
             st.error(f"Error selling security: {str(e)}")
 
 
-@st.fragment
-def save_section(file_list):
+def _save_box(file_list):
     save_filename = st.selectbox(
         "Save as filename",
         options=file_list,
@@ -234,3 +207,64 @@ def save_section(file_list):
 
     if st.button("💾 Save Portfolio", key="save_button", use_container_width=True):
         save_portfolio_to_file(f"./Portfolios/{save_filename}")
+
+
+@st.fragment
+def table_section(ticker_options, file_list):
+    # Portfolio table
+    if st.session_state.portfolio.securities:
+        df = _portfolio2df(st.session_state.portfolio)
+    else:
+        # Create empty dataframe with proper structure
+        df = pd.DataFrame(
+            {
+                "Name": [""],
+                "Ticker": [""],
+                "Currency": ["EUR"],
+                "Price": [0.0],
+                "Actual Share": [0.0],
+                "Target Share": [0.0],
+                f"Amount Invested ({st.session_state.portfolio.symbol})": [0.0],
+                "Number Held": [0.0],
+            }
+        )
+
+    # Portfolio table
+    st.data_editor(
+        df,
+        num_rows="dynamic",
+        use_container_width=True,
+        column_config=load_data_config,
+        key="portfolio_editor",
+    )
+
+    # Update security prices
+    if st.button(
+        "💰 Update Securities Price",
+        key="update_securities_price",
+        use_container_width=True,
+    ):
+        try:
+            st.session_state.portfolio.update_portfolio()
+            st.success("Security prices updated!")
+        except Exception as e:
+            st.error(f"Error updating prices: {str(e)}")
+
+    # Buy and sell section
+    col_buy, col_sell = st.columns(2)
+
+    # Buy security
+    with col_buy:
+        st.subheader("Buy Security")
+        _buy_box(ticker_options)
+
+    # Sell security
+    with col_sell:
+        st.subheader("Sell Security")
+        _sell_box(ticker_options)
+
+    # Save portfolio section
+    st.subheader("Save Portfolio")
+    col_save, _ = st.columns(2)
+    with col_save:
+        _save_box(file_list)
