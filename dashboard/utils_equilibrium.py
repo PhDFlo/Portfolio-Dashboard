@@ -41,9 +41,6 @@ def eqportfolio2df(portfolio) -> pd.DataFrame:
 
 @st.fragment
 def plot_equilibrium(new_investment, min_percent, selling, ticker_options, file_list):
-    # Initialize variables
-    total_to_invest = 0
-
     # Create empty dataframe with proper structure
     if st.session_state.portfolio.securities:
         equilibrium_df = eqportfolio2df(st.session_state.portfolio)
@@ -65,7 +62,7 @@ def plot_equilibrium(new_investment, min_percent, selling, ticker_options, file_
     if st.button("🎯 Optimize Portfolio", key="optimize_button", width="stretch"):
         try:
             # Run optimization
-            _, total_to_invest, _ = solve_equilibrium(
+            _, st.session_state.total_to_invest, _ = solve_equilibrium(
                 st.session_state.portfolio,
                 investment_amount=float(new_investment),
                 min_percent_to_invest=float(min_percent),
@@ -73,11 +70,7 @@ def plot_equilibrium(new_investment, min_percent, selling, ticker_options, file_
             )
 
             st.session_state.optim_ran = True
-
             st.rerun(scope="fragment")
-
-            # Display results
-            # equilibrium_df = eqportfolio2df(st.session_state.portfolio)
 
         except Exception as e:
             st.error(f"Error during optimization: {str(e)}")
@@ -90,7 +83,7 @@ def plot_equilibrium(new_investment, min_percent, selling, ticker_options, file_
         )
 
         st.write(
-            f"Total to Invest: {total_to_invest:.2f} {st.session_state.portfolio.symbol}"
+            f"Total to Invest: {st.session_state.total_to_invest:.2f} {st.session_state.portfolio.symbol}"
         )
 
     # Buy and sell section

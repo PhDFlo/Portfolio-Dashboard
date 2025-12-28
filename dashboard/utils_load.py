@@ -11,9 +11,7 @@ load_data_config = {
     "Price": st.column_config.NumberColumn("Price", format="%.4f"),
     "Actual Share": st.column_config.NumberColumn("Actual Share", format="%.4f"),
     "Target Share": st.column_config.NumberColumn("Target Share", format="%.4f"),
-    f"Total value ({st.session_state.portfolio.symbol})": st.column_config.NumberColumn(
-        f"Total value ({st.session_state.portfolio.symbol})", format="%.2f"
-    ),
+    "Total": st.column_config.NumberColumn("Total value", format=None),
     "Volume": st.column_config.NumberColumn("Volume", format="%.0f"),
 }
 
@@ -38,7 +36,7 @@ def _portfolio2df(portfolio) -> pd.DataFrame:
                 "Price": security.get("price_in_security_currency"),
                 "Actual Share": security.get("actual_share"),
                 "Target Share": security.get("target_share"),
-                f"Total value ({portfolio.symbol})": security.get("value"),
+                "Total value": f"{security.get('value')}{security.get('symbol')}",
                 "Volume": security.get("volume"),
             }
         )
@@ -224,8 +222,8 @@ def table_section(ticker_options, file_list):
                 "Price": [0.0],
                 "Actual Share": [0.0],
                 "Target Share": [0.0],
-                f"Amount Invested ({st.session_state.portfolio.symbol})": [0.0],
-                "Number Held": [0.0],
+                "Total Value": [""],
+                "Volume": [0.0],
             }
         )
 
