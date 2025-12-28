@@ -62,9 +62,7 @@ def plot_equilibrium(new_investment, min_percent, selling, ticker_options, file_
             }
         )
 
-    if st.button(
-        "🎯 Optimize Portfolio", key="optimize_button", use_container_width=True
-    ):
+    if st.button("🎯 Optimize Portfolio", key="optimize_button", width="stretch"):
         try:
             # Run optimization
             _, total_to_invest, _ = solve_equilibrium(
@@ -87,7 +85,7 @@ def plot_equilibrium(new_investment, min_percent, selling, ticker_options, file_
     if "optim_ran" in st.session_state:
         st.dataframe(
             equilibrium_df,
-            use_container_width=True,
+            width="stretch",
             column_config=eq_data_config,
         )
 

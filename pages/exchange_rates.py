@@ -43,7 +43,7 @@ to_currency_code = currencies[to_idx].get("cc")
 
 
 # Use resolved codes when calling the API
-if st.button("⚖️ Get rate", use_container_width=True):
+if st.button("⚖️ Get rate", width="stretch"):
     if not from_currency or not to_currency:
         st.error("Please provide both from and to currency ISO codes.")
     else:

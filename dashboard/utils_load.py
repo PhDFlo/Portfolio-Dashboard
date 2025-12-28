@@ -69,18 +69,6 @@ def save_portfolio_to_file(filename) -> bool:
         return False
 
 
-# Put fragment to avoid reloading the full page each time selectbox value is changed
-@st.fragment
-def _selectbox_file(file_list, key) -> str:
-    return st.selectbox(
-        "Select Portfolio JSON",
-        options=file_list,
-        key=key,
-        index=1 if len(file_list) > 1 and "investment_example.json" in file_list else 0,
-        accept_new_options=True,
-    )
-
-
 def side_bar_file_operations(key="portfolio_file_select") -> list:
     """Sidebar for file operations"""
     with st.sidebar:
@@ -105,6 +93,18 @@ def side_bar_file_operations(key="portfolio_file_select") -> list:
                 st.rerun()
 
     return file_list
+
+
+# Put fragment to avoid reloading the full page each time selectbox value is changed
+@st.fragment
+def _selectbox_file(file_list, key) -> str:
+    return st.selectbox(
+        "Select Portfolio JSON",
+        options=file_list,
+        key=key,
+        index=1 if len(file_list) > 1 and "investment_example.json" in file_list else 0,
+        accept_new_options=True,
+    )
 
 
 def _buy_box(ticker_options):
@@ -151,7 +151,7 @@ def _buy_box(ticker_options):
             format="%.2f",
         )
 
-    if st.button("📥 Buy Security", key="buy_button", use_container_width=True):
+    if st.button("📥 Buy Security", key="buy_button", width="stretch"):
         try:
             st.session_state.portfolio.buy_security(
                 ticker=ticker_input_buy,
@@ -184,7 +184,7 @@ def _sell_box(ticker_options):
         step=1.0,
     )
 
-    if st.button("📤 Sell Security", key="sell_button", use_container_width=True):
+    if st.button("📤 Sell Security", key="sell_button", width="stretch"):
         try:
             st.session_state.portfolio.sell_security(
                 ticker=tickers,
@@ -205,7 +205,7 @@ def _save_box(file_list):
         accept_new_options=True,
     )
 
-    if st.button("💾 Save Portfolio", key="save_button", use_container_width=True):
+    if st.button("💾 Save Portfolio", key="save_button", width="stretch"):
         save_portfolio_to_file(f"./Portfolios/{save_filename}")
 
 
@@ -233,7 +233,7 @@ def table_section(ticker_options, file_list):
     st.data_editor(
         df,
         num_rows="dynamic",
-        use_container_width=True,
+        width="stretch",
         column_config=load_data_config,
         key="portfolio_editor",
     )
@@ -242,7 +242,7 @@ def table_section(ticker_options, file_list):
     if st.button(
         "💰 Update Securities Price",
         key="update_securities_price",
-        use_container_width=True,
+        width="stretch",
     ):
         try:
             st.session_state.portfolio.update_portfolio()
