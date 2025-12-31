@@ -1,5 +1,5 @@
 import streamlit as st
-from foliotrack.Portfolio import Portfolio
+from foliotrack.domain.Portfolio import Portfolio
 
 # Configure page
 st.set_page_config(

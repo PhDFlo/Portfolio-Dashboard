@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from foliotrack.Portfolio import Portfolio
+from foliotrack.domain.Portfolio import Portfolio
 from dashboard import (
     side_bar_file_operations,
     get_security_historical_data,

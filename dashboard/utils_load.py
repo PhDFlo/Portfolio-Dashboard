@@ -1,8 +1,14 @@
 import streamlit as st
-from foliotrack.Portfolio import Portfolio
+from foliotrack.domain.Portfolio import Portfolio
+from foliotrack.services.MarketService import MarketService
+from foliotrack.storage.PortfolioRepository import PortfolioRepository
 import pandas as pd
 import os
 import glob
+
+# Instantiating Repository and services
+repo = PortfolioRepository()
+market_service = MarketService()
 
 load_data_config = {
     "Name": st.column_config.TextColumn("Name", width="large"),
@@ -47,7 +53,7 @@ def _portfolio2df(portfolio) -> pd.DataFrame:
 def load_portfolio_from_file(filename) -> Portfolio:
     """Load portfolio from JSON file"""
     try:
-        portfolio = Portfolio.from_json(filename)
+        portfolio = repo.load_from_json(filename)
         return portfolio
     except Exception as e:
         st.error(f"Error loading portfolio: {str(e)}")
@@ -59,7 +65,7 @@ def save_portfolio_to_file(filename) -> bool:
     try:
         # Ensure directory exists
         os.makedirs(os.path.dirname(filename), exist_ok=True)
-        st.session_state.portfolio.to_json(filename)
+        repo.save_to_json(st.session_state.portfolio, filename)
         st.success(f"Portfolio saved to {filename}")
         return True
     except Exception as e:
@@ -243,7 +249,7 @@ def table_section(ticker_options, file_list):
         width="stretch",
     ):
         try:
-            st.session_state.portfolio.update_portfolio()
+            market_service.update_prices(st.session_state.portfolio)
             st.success("Security prices updated!")
         except Exception as e:
             st.error(f"Error updating prices: {str(e)}")

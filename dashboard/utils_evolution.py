@@ -4,7 +4,7 @@ import yfinance as yf
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import plotly.express as px
-from foliotrack.Portfolio import Portfolio
+from foliotrack.domain.Portfolio import Portfolio
 
 # Set pandas option to avoid future warnings
 pd.set_option("future.no_silent_downcasting", True)

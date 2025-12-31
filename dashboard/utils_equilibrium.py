@@ -1,7 +1,10 @@
 import streamlit as st
 import pandas as pd
-from foliotrack.Equilibrate import solve_equilibrium
+from foliotrack.services.OptimizationService import OptimizationService
 from .utils_load import _buy_box, _sell_box, _save_box
+
+# Instantiating Services
+optimizer = OptimizationService()
 
 eq_data_config = {
     "Name": st.column_config.TextColumn("Name"),
@@ -62,7 +65,7 @@ def plot_equilibrium(new_investment, min_percent, selling, ticker_options, file_
     if st.button("🎯 Optimize Portfolio", key="optimize_button", width="stretch"):
         try:
             # Run optimization
-            _, st.session_state.total_to_invest, _ = solve_equilibrium(
+            _, st.session_state.total_to_invest, _ = optimizer.solve_equilibrium(
                 st.session_state.portfolio,
                 investment_amount=float(new_investment),
                 min_percent_to_invest=float(min_percent),
