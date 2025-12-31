@@ -43,7 +43,9 @@ def eqportfolio2df(portfolio) -> pd.DataFrame:
 
 
 @st.fragment
-def plot_equilibrium(new_investment, min_percent, selling, ticker_options, file_list):
+def plot_equilibrium(
+    new_investment, min_percent, max_diff_sec, selling, ticker_options, file_list
+):
     # Create empty dataframe with proper structure
     if st.session_state.portfolio.securities:
         equilibrium_df = eqportfolio2df(st.session_state.portfolio)
@@ -69,6 +71,7 @@ def plot_equilibrium(new_investment, min_percent, selling, ticker_options, file_
                 st.session_state.portfolio,
                 investment_amount=float(new_investment),
                 min_percent_to_invest=float(min_percent),
+                max_different_securities=int(max_diff_sec),
                 selling=bool(selling),
             )
 

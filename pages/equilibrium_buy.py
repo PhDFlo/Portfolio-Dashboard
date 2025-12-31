@@ -10,8 +10,8 @@ selling = st.checkbox(
     value=False,
 )
 
-col1, col2 = st.columns(2)
-with col1:
+col_amount, col_percent, col_max_sec = st.columns(3)
+with col_amount:
     new_investment = st.number_input(
         "New Investment Amount (€)",
         key="investment_amount",
@@ -19,7 +19,7 @@ with col1:
         min_value=0.0,
         format="%.2f",
     )
-with col2:
+with col_percent:
     min_percent = st.number_input(
         "Minimum Percentage to Invest",
         key="min_percent",
@@ -27,6 +27,15 @@ with col2:
         min_value=0.0,
         max_value=1.0,
         format="%.2f",
+    )
+with col_max_sec:
+    max_diff_sec = st.number_input(
+        "Maximum number of different securities",
+        key="max_diff_sec",
+        value=3,
+        min_value=0,
+        max_value=1000,
+        format="%i",
     )
 
 # List of tickers for buy and sell
@@ -39,6 +48,7 @@ if "ticker_options" not in st.session_state:
 plot_equilibrium(
     new_investment,
     min_percent,
+    max_diff_sec,
     selling,
     st.session_state.ticker_options,
     st.session_state.file_list,
