@@ -26,6 +26,8 @@ from .utils_evolution import (
     plot_portfolio_evolution,
 )
 
+from .utils_backtest import plot_backtest
+
 __all__ = [
     "eq_data_config",
     "eqportfolio2df",
@@ -43,4 +45,5 @@ __all__ = [
     "get_security_historical_data",
     "plot_pie_chart",
     "plot_portfolio_evolution",
+    "plot_backtest",
 ]
