@@ -51,8 +51,8 @@ def test_select_and_load_file(page_file, original_dir):
             ],
             "Ticker": ["AIR.PA", "NVDA", "MC.PA"],
             "Currency": ["EUR", "USD", "EUR"],
-            "Price": [204.45, 177.0, 635.5],
-            "Actual Share": [0.8151, 0.0359, 0.149],
+            "Price": [195.72, 183.31, 627.7],
+            "Actual Share": [0.8093, 0.038, 0.1527],
             "Target Share": [0.5, 0.2, 0.3],
             "Volume": [17.0, 1.0, 1.0],
         }

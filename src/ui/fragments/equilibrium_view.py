@@ -1,11 +1,6 @@
 import streamlit as st
 from src.services.optimization_service import OptimizationService
 from src.services.data_service import DataService
-from src.ui.fragments.portfolio_actions import (
-    _render_buy_box,
-    _render_sell_box,
-    _render_save_box,
-)
 from src.ui.fragments.portfolio_actions import render_portfolio_actions
 
 # Initialize services
@@ -56,7 +51,10 @@ def render_equilibrium_view(
             st.rerun(scope="fragment")
 
         except Exception as e:
-            st.error(f"Error during optimization: {str(e)}")
+            if 'scope="fragment"' in str(e):
+                st.rerun()
+            else:
+                st.error(f"Error during optimization: {str(e)}")
 
     if "optim_ran" in st.session_state:
         st.dataframe(
