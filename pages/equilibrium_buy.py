@@ -1,5 +1,5 @@
 import streamlit as st
-from dashboard import plot_equilibrium
+from src.ui.fragments.equilibrium_view import render_equilibrium_view
 
 # Optimization parameters
 st.subheader("Optimization")
@@ -40,16 +40,30 @@ with col_max_sec:
 
 # List of tickers for buy and sell
 if "ticker_options" not in st.session_state:
-    st.session_state.ticker_options = [""]
-    st.session_state.file_list = [""]
+    # This might be populated by load_portfolio page, but if starting here directly
+    # we need to populate generic ones or from current portfolio
+    if "portfolio" in st.session_state:
+        st.session_state.ticker_options = [""] + list(
+            st.session_state.portfolio.securities.keys()
+        )
+    else:
+        st.session_state.ticker_options = [""]
+
+# Retrieve file list for saving
+# This is a bit disjointed now as file_list was coming from sidebar in load_portfolio.
+# We should probably initialize file_list in app.py or re-fetch it here.
+from src.services.portfolio_service import PortfolioService
+
+portfolio_service = PortfolioService()
+file_list = [""] + portfolio_service.get_portfolio_filenames()
 
 
 # Optimization button and results
-plot_equilibrium(
+render_equilibrium_view(
     new_investment,
     min_percent,
     max_diff_sec,
     selling,
     st.session_state.ticker_options,
-    st.session_state.file_list,
+    file_list,
 )

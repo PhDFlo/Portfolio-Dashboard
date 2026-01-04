@@ -1,24 +1,27 @@
 import streamlit as st
-import pandas as pd
 from foliotrack.domain.Portfolio import Portfolio
-from dashboard import (
-    side_bar_file_operations,
-    table_section,
-)
+from src.ui.components.sidebar import render_sidebar
+from src.ui.fragments.portfolio_table import render_portfolio_table
+from src.ui.fragments.portfolio_actions import render_portfolio_actions
+
+# Ensure session state
+if "portfolio" not in st.session_state:
+    st.session_state.portfolio = Portfolio()
 
 # Side bar for file operations
-st.session_state.file_list = side_bar_file_operations()
-
-# Display current portfolio in editable table
-if "portfolio" not in st.session_state:
-    # Ensure a portfolio object exists in session state for pages run standalone
-    st.session_state.portfolio = Portfolio()
+file_list = render_sidebar()
 
 # List of tickers
 ticker_list = [ticker for ticker in st.session_state.portfolio.securities]
-
 # List of tickers for buy and sell
-st.session_state.ticker_options = [""] + ticker_list
+ticker_options = [""] + ticker_list
 
 st.subheader("Security List")
-table_section(st.session_state.ticker_options, st.session_state.file_list)
+
+# Render Table Fragment
+render_portfolio_table()
+
+# Render Actions Fragment
+# Note: In the original code, table_section contained both table AND actions.
+# We separated them. We should render actions below the table.
+render_portfolio_actions(ticker_options, file_list)

@@ -3,6 +3,10 @@ import pandas as pd
 from pathlib import Path
 import pytest
 from streamlit.testing.v1.app_test import AppTest
+import sys
+
+# Add project root to sys.path
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Add parent directory to sys.path is done in other tests by changing cwd
 
