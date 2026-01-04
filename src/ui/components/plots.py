@@ -59,7 +59,7 @@ def plot_pie_chart(portfolio: Portfolio, ticker_list: list[str]):
             dict(
                 text="Target",
                 x=0.5,
-                y=0.74,  # manually adjusted for 2 rows
+                y=sum(fig.get_subplot(1, 1).y) / 2,
                 font_size=20,
                 showarrow=False,
                 yanchor="middle",
@@ -67,7 +67,7 @@ def plot_pie_chart(portfolio: Portfolio, ticker_list: list[str]):
             dict(
                 text="Actual",
                 x=0.5,
-                y=0.22,  # manually adjusted
+                y=sum(fig.get_subplot(2, 1).y) / 2,
                 font_size=20,
                 showarrow=False,
                 yanchor="middle",
