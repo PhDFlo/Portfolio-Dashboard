@@ -16,10 +16,12 @@ ticker_list = [ticker for ticker in st.session_state.portfolio.securities]
 # List of tickers for buy and sell
 ticker_options = [""] + ticker_list
 
-st.subheader("Security List")
+# Security List (Card)
+with st.container(border=True):
+    st.subheader("Security List")
 
-# Render Table Fragment
-render_portfolio_table()
+    # Render Table Fragment
+    render_portfolio_table()
 
 # Render Actions Fragment
 # Note: In the original code, table_section contained both table AND actions.

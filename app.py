@@ -10,7 +10,11 @@ st.set_page_config(
 )
 
 # Main app
-st.title("📈 Portfolio Dashboard")
+from src.styles import apply_custom_style
+
+apply_custom_style()
+
+st.markdown('# 📈 <span class="gradient-text">Portfolio Dashboard</span>', unsafe_allow_html=True)
 
 # Initialize session state for portfolio
 if "portfolio" not in st.session_state:

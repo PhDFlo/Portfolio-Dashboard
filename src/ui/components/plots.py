@@ -74,6 +74,8 @@ def plot_pie_chart(portfolio: Portfolio, ticker_list: list[str]):
             ),
         ],
         showlegend=False,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
     )
     # Using relative positioning for annotations or domain coordinates is safer but this matches original roughly
     # Actually, in make_subplots, domains are calculated.
@@ -212,6 +214,8 @@ def plot_portfolio_evolution(
         yaxis2_title="Security Volumes Exchanges, Buy (+) / Sell (-)",
         yaxis=dict(domain=[0.4, 1.0]),
         yaxis2=dict(domain=[0.0, 0.2]),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
     )
 
     # Set y-axis range

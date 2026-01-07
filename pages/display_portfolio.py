@@ -36,34 +36,40 @@ col_candle, col_pie = st.columns([3, 1])
 if ticker_list != []:
     # Display portfolio value evolution over time
     with col_candle:
-        # Check if history exists
-        if (
-            hasattr(st.session_state.portfolio, "history")
-            and st.session_state.portfolio.history
-        ):
-            start_date = min(
-                event["date"] for event in st.session_state.portfolio.history
-            )
-
-            # Get historical data for all tickers in portfolio
-            hist_tickers = market_service.get_security_historical_data(
-                ticker_list, start_date=start_date, interval="1d"
-            )
-
-            if not hist_tickers.empty:
-                plot_portfolio_evolution(
-                    portfolio=st.session_state.portfolio,
-                    ticker_list=ticker_list,
-                    hist_tickers=hist_tickers,
-                    Date=pd.DatetimeIndex(hist_tickers.index),
-                    min_y_exchange=min_y_exchange,
-                    max_y_exchange=max_y_exchange,
+        with st.container(border=True):
+            st.subheader("Portfolio Time Evolution")
+            # Check if history exists
+            if (
+                hasattr(st.session_state.portfolio, "history")
+                and st.session_state.portfolio.history
+            ):
+                start_date = min(
+                    event["date"] for event in st.session_state.portfolio.history
                 )
+
+                # Get historical data for all tickers in portfolio
+                hist_tickers = market_service.get_security_historical_data(
+                    ticker_list, start_date=start_date, interval="1d"
+                )
+
+                if not hist_tickers.empty:
+                    plot_portfolio_evolution(
+                        portfolio=st.session_state.portfolio,
+                        ticker_list=ticker_list,
+                        hist_tickers=hist_tickers,
+                        Date=pd.DatetimeIndex(hist_tickers.index),
+                        min_y_exchange=min_y_exchange,
+                        max_y_exchange=max_y_exchange,
+                    )
+                else:
+                    st.info("No historical data available for these tickers.")
             else:
-                st.info("No historical data available for these tickers.")
-        else:
-            st.info("No history available for this portfolio.")
+                st.info("No history available for this portfolio.")
 
     # Display target vs actual shares in donut charts
     with col_pie:
-        plot_pie_chart(portfolio=st.session_state.portfolio, ticker_list=ticker_list)
+        with st.container(border=True):
+            st.subheader("Distribution")
+            plot_pie_chart(
+                portfolio=st.session_state.portfolio, ticker_list=ticker_list
+            )
