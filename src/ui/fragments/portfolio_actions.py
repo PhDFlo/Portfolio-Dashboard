@@ -138,7 +138,6 @@ def _render_save_box(file_list):
 
     if st.button("💾 Save Portfolio", key="save_button", width="stretch"):
         try:
-            print(PORTFOLIOS_DIR / save_filename)
             repo.save_to_json(
                 st.session_state.portfolio, PORTFOLIOS_DIR / save_filename
             )
