@@ -1,5 +1,4 @@
 import streamlit as st
-import os
 from src.services.portfolio_service import PortfolioService
 
 portfolio_service = PortfolioService()

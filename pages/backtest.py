@@ -38,9 +38,7 @@ end_date = st.sidebar.date_input(
 # I will assume `MarketService` in `src.services` uses default which is likely what we want,
 # OR I should let `MarketService` accept args.
 
-from foliotrack.services.MarketService import MarketService as FoliotrackMarketService
-
-market_service_backend = FoliotrackMarketService("ffn")
+market_service_backend = MarketService("ffn")
 
 if "portfolio" in st.session_state:
     render_backtest_view(

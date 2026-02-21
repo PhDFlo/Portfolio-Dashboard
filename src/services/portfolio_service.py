@@ -1,5 +1,3 @@
-import os
-import glob
 from foliotrack.domain.Portfolio import Portfolio
 from foliotrack.storage.PortfolioRepository import PortfolioRepository
 from src.config import PORTFOLIOS_DIR

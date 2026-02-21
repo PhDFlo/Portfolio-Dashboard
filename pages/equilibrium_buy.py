@@ -1,5 +1,6 @@
 import streamlit as st
 from src.ui.fragments.equilibrium_view import render_equilibrium_view
+from src.services.portfolio_service import PortfolioService
 
 # Optimization parameters
 st.subheader("Optimization")
@@ -52,7 +53,6 @@ if "ticker_options" not in st.session_state:
 # Retrieve file list for saving
 # This is a bit disjointed now as file_list was coming from sidebar in load_portfolio.
 # We should probably initialize file_list in app.py or re-fetch it here.
-from src.services.portfolio_service import PortfolioService
 
 portfolio_service = PortfolioService()
 file_list = [""] + portfolio_service.get_portfolio_filenames()

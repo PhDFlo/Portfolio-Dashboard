@@ -5,11 +5,8 @@ description = "The Security Portfolio Optimizer is a web application built with 
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "foliotrack",
+    "foliotrack>=0.0.7",
     "plotly>=6.3.0",
     "pytest>=8.4.2",
     "streamlit>=1.50.0",
 ]
-
-[tool.uv.sources]
-foliotrack = { path = "../foliotrack", editable = true }
