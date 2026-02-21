@@ -1,6 +1,6 @@
 import streamlit as st
 from src.services.data_service import DataService
-from src.services.market_service import MarketService
+from foliotrack.services.MarketService import MarketService
 
 # Initialize services
 market_service = MarketService()

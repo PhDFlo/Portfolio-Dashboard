@@ -1,8 +1,10 @@
 import streamlit as st
-from src.services.portfolio_service import PortfolioService
+from foliotrack.services.MarketService import MarketService
+from foliotrack.storage.PortfolioRepository import PortfolioRepository
 
 # Initialize services
-portfolio_service = PortfolioService()
+market_service = MarketService()
+repo = PortfolioRepository()
 
 
 @st.fragment
@@ -77,8 +79,7 @@ def _render_buy_box(ticker_options):
 
     if st.button("📥 Buy Security", key="buy_button", width="stretch"):
         try:
-            portfolio_service.buy_security(
-                st.session_state.portfolio,
+            st.session_state.portfolio.buy_security(
                 ticker=ticker_input_buy,
                 volume=volume_buy,
                 price=buy_price,
@@ -87,25 +88,15 @@ def _render_buy_box(ticker_options):
             st.success(
                 f"Bought {volume_buy} unit(s) of {ticker_input_buy} at {buy_price}"
             )
-            # We assume this fragment is part of a larger page where other fragments dependent on portfolio need update.
-            # However, since we cannot easily trigger update of other fragments without full rerun,
-            # and user asked for performance, we might need to rely on the user refreshing or
-            # structuring the app so this fragment includes the table if we want instant update without full reload.
-            # For now, we will just rerun this fragment, but that won't update the table if it's separate.
-            # To fix this properly, we should probably combine them or use st.rerun() (global).
-            # Constraint: "avoid full app reloaded".
-            # If we simply st.rerun(), it reloads the whole app.
-            # Ideally, we should use a shared parent fragment for both Table and Actions if they are on same page.
-            # But the requirement suggests independent fragments.
-            # Let's try just rerunning this fragment. The table might be stale.
-            # User might prefer a full rerun for consistency if data changes.
-            # Or we can accept that the table requires a manual refresh or we group them.
-            # Let's stick to st.rerun() (global) on data mutation for now to ensure consistency,
-            # as separate fragments cannot signal each other easily yet.
-            # WAIT, if I use st.rerun(), it defeats the purpose of fragments for actions that don't need full reload.
-            # But Buying DOES change global state that affects the Table.
-            # So a full rerun IS appropriate here.
-            # The "Update Price" button in the table fragment CAN be local because it's inside the table's fragment.
+
+            # Call update_prices to fetch name and price
+            market_service.update_prices(st.session_state.portfolio)
+
+            info = st.session_state.portfolio.get_portfolio_info()
+            for security_info in info:
+                for k, v in security_info.items():
+                    print(f"  {k}: {v}")
+
             st.rerun()
         except Exception as e:
             st.error(f"Error buying security: {str(e)}")
@@ -130,8 +121,7 @@ def _render_sell_box(ticker_options):
 
     if st.button("📤 Sell Security", key="sell_button", width="stretch"):
         try:
-            portfolio_service.sell_security(
-                st.session_state.portfolio,
+            st.session_state.portfolio.sell_security(
                 ticker=tickers,
                 volume=volumes,
             )
@@ -152,9 +142,7 @@ def _render_save_box(file_list):
 
     if st.button("💾 Save Portfolio", key="save_button", width="stretch"):
         try:
-            path = portfolio_service.save_portfolio(
-                st.session_state.portfolio, save_filename
-            )
+            path = repo.save_to_json(st.session_state.portfolio, save_filename)
             st.success(f"Portfolio saved to {path}")
         except Exception as e:
             st.error(str(e))

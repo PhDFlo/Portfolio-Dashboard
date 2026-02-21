@@ -22,6 +22,4 @@ st.subheader("Security List")
 render_portfolio_table()
 
 # Render Actions Fragment
-# Note: In the original code, table_section contained both table AND actions.
-# We separated them. We should render actions below the table.
 render_portfolio_actions(ticker_options, file_list)
