@@ -92,11 +92,6 @@ def _render_buy_box(ticker_options):
             # Call update_prices to fetch name and price
             market_service.update_prices(st.session_state.portfolio)
 
-            info = st.session_state.portfolio.get_portfolio_info()
-            for security_info in info:
-                for k, v in security_info.items():
-                    print(f"  {k}: {v}")
-
             st.rerun()
         except Exception as e:
             st.error(f"Error buying security: {str(e)}")
