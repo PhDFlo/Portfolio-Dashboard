@@ -1253,7 +1253,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "foliotrack" },
+    { name = "foliotrack", specifier = ">=0.0.7" },
     { name = "plotly", specifier = ">=6.3.0" },
     { name = "pytest", specifier = ">=8.4.2" },
     { name = "streamlit", specifier = ">=1.50.0" },
