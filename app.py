@@ -1,5 +1,5 @@
 import streamlit as st
-from foliotrack.Portfolio import Portfolio
+from foliotrack.domain.Portfolio import Portfolio
 
 # Configure page
 st.set_page_config(
@@ -25,7 +25,13 @@ load = st.Page(
 equil = st.Page(
     "pages/equilibrium_buy.py",
     title="Equilibrium, Buy & Export",
-    icon="🔨",
+    icon="🎛️",
+)
+
+display = st.Page(
+    "pages/display_portfolio.py",
+    title="Display Portfolio",
+    icon="📺",
 )
 
 compare = st.Page(
@@ -34,14 +40,29 @@ compare = st.Page(
     icon="📚",
 )
 
+backtest = st.Page(
+    "pages/backtest.py",
+    title="Backtest Simulation",
+    icon="📊",
+)
+
+exchange = st.Page(
+    "pages/exchange_rates.py",
+    title="Exchange Rates",
+    icon="💲",
+)
+
 pg = st.navigation(
     {
         "Manage": [
             load,
             equil,
+            display,
         ],
         "Tools": [
             compare,
+            exchange,
+            backtest,
         ],
     }
 )

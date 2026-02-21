@@ -1,12 +1,12 @@
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
-from dashboard import (
-    simulate_contract,
-    compute_after_tax_curve,
-    create_contract_form,
-    plotly_colors,
-)
+import plotly.express as px
+
+from src.services.simulation_service import SimulationService
+from src.ui.components.contract_form import create_contract_form
+
+plotly_colors = px.colors.qualitative.Plotly
 
 st.subheader("Compare Securities")
 
@@ -46,8 +46,8 @@ if st.button("Compare"):
     after_tax_curves = []
     labels = []
     for contract in contracts:
-        series, invested = simulate_contract(contract)
-        after_tax_curve = compute_after_tax_curve(
+        series, invested = SimulationService.simulate_contract(contract)
+        after_tax_curve = SimulationService.compute_after_tax_curve(
             series, invested, contract["capgains_tax"]
         )
         series_list.append(series)
@@ -66,7 +66,7 @@ if st.button("Compare"):
                 y=series,
                 mode="lines",
                 name=f"{label} (pre-withdrawal)",
-                line=dict(color=plotly_colors[idx], dash="dash"),
+                line=dict(color=plotly_colors[idx % len(plotly_colors)], dash="dash"),
             )
         )
         fig.add_trace(
@@ -75,7 +75,7 @@ if st.button("Compare"):
                 y=after_tax_curve,
                 mode="lines",
                 name=f"{label} (after-tax)",
-                line=dict(color=plotly_colors[idx], dash="solid"),
+                line=dict(color=plotly_colors[idx % len(plotly_colors)], dash="solid"),
             )
         )
     fig.update_layout(

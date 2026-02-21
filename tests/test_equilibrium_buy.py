@@ -1,8 +1,12 @@
 import os
+import sys
 import pandas as pd
 from pathlib import Path
 import pytest
 from streamlit.testing.v1.app_test import AppTest
+
+# Add project root to sys.path
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
 @pytest.fixture
@@ -31,7 +35,6 @@ def test_edit_investment(page_file, original_dir):
     assert at.number_input(key="investment_amount").value == pytest.approx(
         500.01, 0.001
     )
-    print(at.number_input(key="investment_amount"))
 
     # Increment Minimum Percentage input
     at.number_input(key="min_percent").increment().run()
@@ -54,15 +57,22 @@ def test_optimize_portfolio(page_file, original_dir):
     at.switch_page(page_file)
     at.run()
 
+    # Change investment amount and minimum percentage
+    at.number_input(key="investment_amount").set_value(1000.0).run()
+    at.number_input(key="min_percent").set_value(0.95).run()
+    at.number_input(key="max_diff_sec").set_value(3).run()
+
     # Click on the "Optimize Portfolio" button
     at.button(key="optimize_button").click().run()
 
     expected_df = pd.DataFrame(
         {
-            "Number to buy": [1, 2, 0],
+            "Volume to buy": [1, 1, 1],
         }
     )
 
     assert (
-        at.dataframe[0].value["Number to buy"].equals(expected_df["Number to buy"])
-    ), "Mismatch in 'Number to buy' column"
+        at.dataframe[0].value["Volume to buy"].equals(expected_df["Volume to buy"])
+    ), (
+        f"Mismatch in 'Volume to buy' column. Got: {at.dataframe[0].value['Volume to buy'].tolist()}"
+    )
