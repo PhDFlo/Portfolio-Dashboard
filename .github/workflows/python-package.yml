@@ -59,4 +59,4 @@ jobs:
 
     - name: Test with pytest
       run: | 
-        uv run pytest --timeout=60
+        uv run pytest

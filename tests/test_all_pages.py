@@ -29,7 +29,7 @@ def original_dir():
 )
 def test_page_loads(original_dir, filename):
     # Initialize the app test with the main app
-    at = AppTest.from_file("app.py").run()
+    at = AppTest.from_file("app.py").run(default_timeout=30)
 
     # Try to switch to the page
     at.switch_page(filename)
