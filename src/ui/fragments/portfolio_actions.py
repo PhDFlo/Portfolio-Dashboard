@@ -1,6 +1,7 @@
 import streamlit as st
 from foliotrack.services.MarketService import MarketService
 from foliotrack.storage.PortfolioRepository import PortfolioRepository
+from src.config import PORTFOLIOS_DIR
 
 # Initialize services
 market_service = MarketService()
@@ -137,7 +138,10 @@ def _render_save_box(file_list):
 
     if st.button("💾 Save Portfolio", key="save_button", width="stretch"):
         try:
-            path = repo.save_to_json(st.session_state.portfolio, save_filename)
-            st.success(f"Portfolio saved to {path}")
+            print(PORTFOLIOS_DIR / save_filename)
+            repo.save_to_json(
+                st.session_state.portfolio, PORTFOLIOS_DIR / save_filename
+            )
+            st.success(f"Portfolio saved to {PORTFOLIOS_DIR / save_filename}")
         except Exception as e:
             st.error(str(e))
