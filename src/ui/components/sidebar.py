@@ -1,7 +1,10 @@
 import streamlit as st
+from foliotrack.storage.PortfolioRepository import PortfolioRepository
+from src.config import PORTFOLIOS_DIR
 from src.services.portfolio_service import PortfolioService
 
 portfolio_service = PortfolioService()
+repo = PortfolioRepository()
 
 
 def render_sidebar(key="portfolio_file_select") -> list:
@@ -23,8 +26,8 @@ def render_sidebar(key="portfolio_file_select") -> list:
 
         with col2:
             if st.button("📂 Load", key="load") and selected_file:
-                st.session_state.portfolio = portfolio_service.load_portfolio(
-                    selected_file
+                st.session_state.portfolio = repo.load_from_json(
+                    PORTFOLIOS_DIR / selected_file
                 )
                 st.rerun()
 
