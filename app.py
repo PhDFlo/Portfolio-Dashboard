@@ -44,6 +44,7 @@ pg = st.navigation(
 
 # Custom Sidebar with option_menu
 with st.sidebar:
+    st.title("📈 Portfolio Dashboard")
     menu_options = list(PAGES_MAP.keys())
     
     default_index = 0

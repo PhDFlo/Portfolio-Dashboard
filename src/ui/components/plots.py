@@ -99,7 +99,7 @@ def _get_portfolio_history(
     hist_tickers = hist_tickers.copy()
     hist_tickers.index = pd.to_datetime(hist_tickers.index).tz_localize(None).normalize()
     # Ensure prices are ffilled to handle gaps
-    hist_tickers = hist_tickers.ffill()
+    hist_tickers = hist_tickers.ffill().infer_objects(copy=False)
 
     # 2. Initialize composition dataframe
     portfolio_comp = pd.DataFrame(index=safe_index)
