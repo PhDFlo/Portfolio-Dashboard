@@ -91,69 +91,69 @@ def _get_portfolio_history(
     hist_tickers: pd.DataFrame,
     Date: pd.DatetimeIndex,
 ) -> pd.DataFrame:
-    # Initialize dataframe to track portfolio composition over time
-    portfolio_comp = pd.DataFrame(
-        columns=[f"Volume {t}" for t in ticker_list]
-        + [f"Var {t}" for t in ticker_list]
-        + ["Open", "Low", "High", "Close"],
-        index=Date,
-    )
+    # Suppress pandas downcasting warning
+    pd.set_option("future.no_silent_downcasting", True)
 
-    # Initialize volume tracker
-    count_volume = {ticker: 0 for ticker in ticker_list}
+    # 1. Standardize all indices to naive daily timestamps to avoid match failures (TZ issues, etc.)
+    safe_index = pd.to_datetime(Date).tz_localize(None).normalize()
+    hist_tickers = hist_tickers.copy()
+    hist_tickers.index = pd.to_datetime(hist_tickers.index).tz_localize(None).normalize()
+    # Ensure prices are ffilled to handle gaps
+    hist_tickers = hist_tickers.ffill()
 
-    for event in portfolio.history:
-        ticker = event["ticker"]
-        volume = event["volume"]
-        date = event["date"]
+    # 2. Initialize composition dataframe
+    portfolio_comp = pd.DataFrame(index=safe_index)
+    for t in ticker_list:
+        portfolio_comp[f"Volume {t}"] = 0.0
+        portfolio_comp[f"Var {t}"] = 0.0
 
-        # Ensure date is in index, otherwise we skip or need to handle it.
-        # Assuming date matches index frequency or is subset.
-        if date in portfolio_comp.index:
-            # Add or remove volume based on action
-            count_volume[ticker] += volume
-            portfolio_comp.loc[date, f"Volume {ticker}"] = count_volume[ticker]
-            portfolio_comp.loc[date, f"Var {ticker}"] = volume
+    # 3. Process History: Group by date and ticker to handle multiple events on same day
+    history_df = pd.DataFrame(portfolio.history)
+    if not history_df.empty:
+        history_df["date"] = pd.to_datetime(history_df["date"]).dt.tz_localize(None).dt.normalize()
+        history_agg = history_df.groupby(["date", "ticker"])["volume"].sum().reset_index()
 
-    # Verify that all volumes are filled
+        for _, row in history_agg.iterrows():
+            ticker = row["ticker"]
+            volume = row["volume"]
+            event_date = row["date"]
+
+            if ticker not in ticker_list:
+                continue
+
+            # Find the nearest valid date in index (>= event_date)
+            # searchsorted returns the index where event_date would be inserted to maintain order
+            idx = safe_index.searchsorted(event_date)
+            if idx < len(safe_index):
+                actual_date = safe_index[idx]
+                portfolio_comp.at[actual_date, f"Var {ticker}"] += volume
+
+    # 4. Calculate Cumulative volume
     for ticker in ticker_list:
-        if not portfolio_comp.empty:
-            portfolio_comp.loc[portfolio_comp.index[-1], f"Volume {ticker}"] = (
-                count_volume[ticker]
-            )
+        portfolio_comp[f"Volume {ticker}"] = portfolio_comp[f"Var {ticker}"].cumsum()
 
-        # Fill volume between events
-        portfolio_comp[f"Volume {ticker}"] = portfolio_comp[f"Volume {ticker}"].ffill(
-            axis=0
-        )
+    # 5. Compute Total Portfolio Value (OHLC)
+    portfolio_comp["Open"] = 0.0
+    portfolio_comp["High"] = 0.0
+    portfolio_comp["Low"] = 0.0
+    portfolio_comp["Close"] = 0.0
 
-        # Fill volume remaining NaN with 0
-        portfolio_comp[f"Volume {ticker}"] = portfolio_comp[f"Volume {ticker}"].fillna(
-            0
-        )
+    for ticker in ticker_list:
+        # Get volume series
+        vol = portfolio_comp[f"Volume {ticker}"]
 
-    # Compute total value
-    for i, date in enumerate(Date):
-        # Compute portfolio values
-        total_value = {"Open": 0, "Low": 0, "High": 0, "Close": 0}
-        for ticker in ticker_list:
-            vol = portfolio_comp.loc[date, f"Volume {ticker}"]
-            # Handle missing data if any
-            if ("Open", ticker) in hist_tickers.columns:
-                open_p = hist_tickers.loc[date, ("Open", ticker)]
-                low_p = hist_tickers.loc[date, ("Low", ticker)]
-                high_p = hist_tickers.loc[date, ("High", ticker)]
-                close_p = hist_tickers.loc[date, ("Close", ticker)]
-
-                total_value["Open"] += vol * open_p
-                total_value["Low"] += vol * low_p
-                total_value["High"] += vol * high_p
-                total_value["Close"] += vol * close_p
-
-        portfolio_comp.loc[date, "Open"] = total_value["Open"]
-        portfolio_comp.loc[date, "Low"] = total_value["Low"]
-        portfolio_comp.loc[date, "High"] = total_value["High"]
-        portfolio_comp.loc[date, "Close"] = total_value["Close"]
+        # Handle MultiIndex OHLC data
+        if isinstance(hist_tickers.columns, pd.MultiIndex):
+            for ohlc in ["Open", "High", "Low", "Close"]:
+                if (ohlc, ticker) in hist_tickers.columns:
+                    portfolio_comp[ohlc] += vol * hist_tickers[(ohlc, ticker)]
+                elif ("Adj Close", ticker) in hist_tickers.columns:
+                    portfolio_comp[ohlc] += vol * hist_tickers[("Adj Close", ticker)]
+        # Handle Single Index (simple prices)
+        elif ticker in hist_tickers.columns:
+            price = hist_tickers[ticker]
+            for ohlc in ["Open", "High", "Low", "Close"]:
+                portfolio_comp[ohlc] += vol * price
 
     return portfolio_comp
 

@@ -10,8 +10,11 @@ market_service = MarketService()
 # Title and Metrics
 st.title(f"📊 {st.session_state.portfolio.name}")
 
+# Ensure shares and total_invested are fresh
+st.session_state.portfolio.recalculate_shares()
+
 # Calculate high-level stats
-total_value = st.session_state.portfolio.total_value
+total_value = st.session_state.portfolio.total_invested
 num_securities = len(st.session_state.portfolio.securities)
 symbol = st.session_state.portfolio.symbol
 
