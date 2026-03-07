@@ -9,9 +9,6 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Main app
-st.title("📈 Portfolio Dashboard")
-
 # Initialize session state for portfolio
 if "portfolio" not in st.session_state:
     st.session_state.portfolio = Portfolio()
@@ -47,17 +44,8 @@ pg = st.navigation(
 
 # Custom Sidebar with option_menu
 with st.sidebar:
-    st.title("📈 Portfolio")
-    
-    # Try to detect current page to sync menu
-    # For AppTest compatibility, we can check st.session_state's internal keys if they exist
-    # or just rely on st.Page objects if they are exposed correctly.
-    # A safer way is to use a dedicated key for navigation.
-    
     menu_options = list(PAGES_MAP.keys())
     
-    # If we switched page via st.switch_page or Sidebar, we should sync
-    # We find which page the current URL/Path corresponds to
     default_index = 0
     if "selected_page" in st.session_state:
         try:
@@ -66,27 +54,28 @@ with st.sidebar:
             pass
 
     selected = option_menu(
-        menu_title="Menu",
+        menu_title=None,
         options=menu_options,
         icons=["cloud-upload", "gear", "tv", "book", "currency-exchange", "graph-up"],
         menu_icon="cast",
         default_index=default_index,
         styles={
-            "container": {"padding": "5px", "background-color": "#0e1117"},
-            "icon": {"color": "#ff4b4b", "font-size": "20px"}, 
-            "nav-link": {"font-size": "16px", "text-align": "left", "margin": "0px", "--hover-color": "#262730"},
+            "container": {"padding": "0px", "background-color": "transparent"},
+            "icon": {"color": "#ff4b4b", "font-size": "18px"}, 
+            "nav-link": {"font-size": "14px", "text-align": "left", "margin": "0px"},
             "nav-link-selected": {"background-color": "#ff4b4b", "color": "white"},
         },
-        key="main_menu_nav" # Give it a key for persistence
+        key="main_menu_nav"
     )
 
-    st.divider()
-    st.caption("v0.0.1 - Built with foliotrack")
-
-# Switch page only if the selection in option_menu is different from our recorded state
+# Switch page only if selection changed
 if "selected_page" not in st.session_state or selected != st.session_state.selected_page:
     st.session_state.selected_page = selected
     st.switch_page(PAGES_MAP[selected])
 
 # Run the selected page
 pg.run()
+
+# Version footer at the bottom of the main page
+st.divider()
+st.caption("v0.0.1 - Built with foliotrack")
