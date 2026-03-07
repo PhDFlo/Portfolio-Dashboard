@@ -8,39 +8,47 @@ from src.ui.components.contract_form import create_contract_form
 
 plotly_colors = px.colors.qualitative.Plotly
 
-st.subheader("Compare Securities")
+st.title("📚 Security Comparison")
 
-st.sidebar.header("Contract Details")
-years = st.sidebar.number_input("Number of Years", value=30, min_value=1)
+with st.sidebar:
+    st.divider()
+    st.header("Simulation Settings")
+    years = st.number_input("Number of Years", value=30, min_value=1)
 
 contracts = []
 
 col1, col2 = st.columns(2)
 with col1:
-    contracts.append(
-        create_contract_form(
-            st,
-            "A",
-            label="PEA",
-            annual_return=0.06,
-            capgains_tax=0.172,
-            years=years,
+    with st.container(border=True):
+        st.subheader("Contract A")
+        contracts.append(
+            create_contract_form(
+                st,
+                "A",
+                label="PEA",
+                annual_return=0.06,
+                capgains_tax=0.172,
+                years=years,
+            )
         )
-    )
 
 with col2:
-    contracts.append(
-        create_contract_form(
-            st,
-            "B",
-            label="CTO",
-            annual_return=0.08,
-            capgains_tax=0.30,
-            years=years,
+    with st.container(border=True):
+        st.subheader("Contract B")
+        contracts.append(
+            create_contract_form(
+                st,
+                "B",
+                label="CTO",
+                annual_return=0.08,
+                capgains_tax=0.30,
+                years=years,
+            )
         )
-    )
 
-if st.button("Compare"):
+st.divider()
+
+if st.button("🚀 Run Comparison", width="stretch"):
     series_list = []
     invested_list = []
     after_tax_curves = []
@@ -65,7 +73,7 @@ if st.button("Compare"):
                 x=xs,
                 y=series,
                 mode="lines",
-                name=f"{label} (pre-withdrawal)",
+                name=f"{label} (Pre-withdrawal)",
                 line=dict(color=plotly_colors[idx % len(plotly_colors)], dash="dash"),
             )
         )
@@ -74,7 +82,7 @@ if st.button("Compare"):
                 x=xs,
                 y=after_tax_curve,
                 mode="lines",
-                name=f"{label} (after-tax)",
+                name=f"{label} (After-tax)",
                 line=dict(color=plotly_colors[idx % len(plotly_colors)], dash="solid"),
             )
         )
@@ -83,20 +91,32 @@ if st.button("Compare"):
         xaxis_title="Years",
         yaxis_title="Portfolio value",
         legend_title="Contracts",
+        template="plotly_dark",
     )
 
-    # Store the plot in session state to persist across pages
+    # Store results in session state
     st.session_state["comparison_plot"] = fig
+    st.session_state["comparison_results"] = {
+        "labels": labels,
+        "pre_tax": [s[-1] for s in series_list],
+        "after_tax": [a[-1] for a in after_tax_curves]
+    }
 
-    # Print last value of each series in the console for debugging
-    for idx, (series, label) in enumerate(zip(series_list, labels)):
-        st.markdown(f"Final value of {label} (pre-withdrawal): {series[-1]:.2f} €")
-        st.markdown(
-            f"Final value of {label} (after-tax): {after_tax_curves[idx][-1]:.2f} €"
-        )
+# Results Display
+if "comparison_results" in st.session_state:
+    results = st.session_state["comparison_results"]
+    st.subheader("Final Values (at end of period)")
+    
+    with st.container(border=True):
+        res_col1, res_col2 = st.columns(2)
+        for i, label in enumerate(results["labels"]):
+            with [res_col1, res_col2][i % 2]:
+                st.write(f"**{label}**")
+                st.metric("Final After-Tax", f"{results['after_tax'][i]:,.2f} €")
+                st.caption(f"Pre-withdrawal: {results['pre_tax'][i]:,.2f} €")
 
-# Display the plot if it exists in session state
 if "comparison_plot" in st.session_state:
-    st.plotly_chart(
-        st.session_state["comparison_plot"], key="persistent_comparison_plot"
-    )
+    with st.container(border=True):
+        st.plotly_chart(
+            st.session_state["comparison_plot"], use_container_width=True
+        )

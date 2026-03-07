@@ -17,19 +17,22 @@ def render_portfolio_actions(ticker_options: list, file_list: list):
 
     # Buy security
     with col_buy:
-        st.subheader("Buy Security")
-        _render_buy_box(ticker_options)
+        with st.container(border=True):
+            st.subheader("📥 Buy Security")
+            _render_buy_box(ticker_options)
 
     # Sell security
     with col_sell:
-        st.subheader("Sell Security")
-        _render_sell_box(ticker_options)
+        with st.container(border=True):
+            st.subheader("📤 Sell Security")
+            _render_sell_box(ticker_options)
 
     # Save portfolio section
-    st.subheader("Save Portfolio")
-    col_save, _ = st.columns(2)
-    with col_save:
-        _render_save_box(file_list)
+    with st.container(border=True):
+        st.subheader("💾 Save & Persistence")
+        col_save, _ = st.columns(2)
+        with col_save:
+            _render_save_box(file_list)
 
 
 def _render_buy_box(ticker_options):

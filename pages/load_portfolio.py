@@ -8,18 +8,24 @@ from src.ui.fragments.portfolio_actions import render_portfolio_actions
 if "portfolio" not in st.session_state:
     st.session_state.portfolio = Portfolio()
 
+st.title("📂 Portfolio Management")
+
 # Side bar for file operations
 file_list = render_sidebar()
 
 # List of tickers
-ticker_list = [ticker for ticker in st.session_state.portfolio.securities]
+ticker_list = list(st.session_state.portfolio.securities.keys())
 # List of tickers for buy and sell
 ticker_options = [""] + ticker_list
 
-st.subheader("Security List")
+with st.container(border=True):
+    st.subheader("Holdings")
+    # Render Table Fragment
+    render_portfolio_table()
 
-# Render Table Fragment
-render_portfolio_table()
+st.divider()
 
-# Render Actions Fragment
-render_portfolio_actions(ticker_options, file_list)
+with st.container(border=True):
+    st.subheader("Manage Portfolio")
+    # Render Actions Fragment
+    render_portfolio_actions(ticker_options, file_list)

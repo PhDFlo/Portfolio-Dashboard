@@ -4,22 +4,27 @@ from src.services.market_service import MarketService
 from src.ui.components.sidebar import render_sidebar
 from src.ui.fragments.backtest_view import render_backtest_view
 
+st.title("📊 Backtest Simulation")
+
 # Side bar for file operations
 render_sidebar()
 
-begin_date = st.sidebar.date_input(
-    "Backtest start date (YYYY-MM-DD)",
-    value=date(2010, 1, 1),
-    key="bt_begin_date",
-    format="YYYY-MM-DD",
-)
+with st.sidebar:
+    st.divider()
+    st.header("Backtest Period")
+    begin_date = st.date_input(
+        "Start Date",
+        value=date(2010, 1, 1),
+        key="bt_begin_date",
+        format="YYYY-MM-DD",
+    )
 
-end_date = st.sidebar.date_input(
-    "Backtest end date (YYYY-MM-DD)",
-    value=date.today(),
-    key="bt_end_date",
-    format="YYYY-MM-DD",
-)
+    end_date = st.date_input(
+        "End Date",
+        value=date.today(),
+        key="bt_end_date",
+        format="YYYY-MM-DD",
+    )
 
 # NOTE: Original code initialized MarketService("ffn").
 # But our src wrapper initializes defaults (which is probably yfinance or ffn depending on foliotrack).

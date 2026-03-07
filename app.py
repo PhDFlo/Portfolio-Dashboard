@@ -16,61 +16,77 @@ st.title("📈 Portfolio Dashboard")
 if "portfolio" not in st.session_state:
     st.session_state.portfolio = Portfolio()
 
-load = st.Page(
-    "pages/load_portfolio.py",
-    title="Portfolio & Update Prices",
-    icon="📂",
-)
+from streamlit_option_menu import option_menu
 
-equil = st.Page(
-    "pages/equilibrium_buy.py",
-    title="Equilibrium, Buy & Export",
-    icon="🎛️",
-)
+# Define pages
+load_page = st.Page("pages/load_portfolio.py", title="Portfolio & Update Prices", icon="📂")
+equil_page = st.Page("pages/equilibrium_buy.py", title="Equilibrium, Buy & Export", icon="🎛️")
+display_page = st.Page("pages/display_portfolio.py", title="Display Portfolio", icon="📺")
+compare_page = st.Page("pages/compare_securities.py", title="Compare Securities", icon="📚")
+exchange_page = st.Page("pages/exchange_rates.py", title="Exchange Rates", icon="💲")
+backtest_page = st.Page("pages/backtest.py", title="Backtest Simulation", icon="📊")
 
-display = st.Page(
-    "pages/display_portfolio.py",
-    title="Display Portfolio",
-    icon="📺",
-)
+# Map titles to pages
+PAGES_MAP = {
+    "Portfolio & Update Prices": load_page,
+    "Equilibrium, Buy & Export": equil_page,
+    "Display Portfolio": display_page,
+    "Compare Securities": compare_page,
+    "Exchange Rates": exchange_page,
+    "Backtest Simulation": backtest_page,
+}
 
-compare = st.Page(
-    "pages/compare_securities.py",
-    title="Compare Securities",
-    icon="📚",
-)
-
-backtest = st.Page(
-    "pages/backtest.py",
-    title="Backtest Simulation",
-    icon="📊",
-)
-
-exchange = st.Page(
-    "pages/exchange_rates.py",
-    title="Exchange Rates",
-    icon="💲",
-)
-
+# Navigation Setup (Hidden default UI)
 pg = st.navigation(
     {
-        "Manage": [
-            load,
-            equil,
-            display,
-        ],
-        "Tools": [
-            compare,
-            exchange,
-            backtest,
-        ],
-    }
+        "Manage": [load_page, equil_page, display_page],
+        "Tools": [compare_page, exchange_page, backtest_page],
+    },
+    position="hidden"
 )
 
-# Run pages
+# Custom Sidebar with option_menu
+with st.sidebar:
+    st.title("📈 Portfolio")
+    
+    # Try to detect current page to sync menu
+    # For AppTest compatibility, we can check st.session_state's internal keys if they exist
+    # or just rely on st.Page objects if they are exposed correctly.
+    # A safer way is to use a dedicated key for navigation.
+    
+    menu_options = list(PAGES_MAP.keys())
+    
+    # If we switched page via st.switch_page or Sidebar, we should sync
+    # We find which page the current URL/Path corresponds to
+    default_index = 0
+    if "selected_page" in st.session_state:
+        try:
+            default_index = menu_options.index(st.session_state.selected_page)
+        except ValueError:
+            pass
+
+    selected = option_menu(
+        menu_title="Menu",
+        options=menu_options,
+        icons=["cloud-upload", "gear", "tv", "book", "currency-exchange", "graph-up"],
+        menu_icon="cast",
+        default_index=default_index,
+        styles={
+            "container": {"padding": "5px", "background-color": "#0e1117"},
+            "icon": {"color": "#ff4b4b", "font-size": "20px"}, 
+            "nav-link": {"font-size": "16px", "text-align": "left", "margin": "0px", "--hover-color": "#262730"},
+            "nav-link-selected": {"background-color": "#ff4b4b", "color": "white"},
+        },
+        key="main_menu_nav" # Give it a key for persistence
+    )
+
+    st.divider()
+    st.caption("v0.0.1 - Built with foliotrack")
+
+# Switch page only if the selection in option_menu is different from our recorded state
+if "selected_page" not in st.session_state or selected != st.session_state.selected_page:
+    st.session_state.selected_page = selected
+    st.switch_page(PAGES_MAP[selected])
+
+# Run the selected page
 pg.run()
-
-
-# Footer
-st.markdown("---")
-st.markdown("**Security Portfolio Optimizer** - Built with foliotrack and Streamlit")

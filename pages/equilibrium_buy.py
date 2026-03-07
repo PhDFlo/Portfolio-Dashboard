@@ -2,41 +2,48 @@ import streamlit as st
 from src.ui.fragments.equilibrium_view import render_equilibrium_view
 from src.services.portfolio_service import PortfolioService
 
-# Optimization parameters
-st.subheader("Optimization")
+# Optimization Parameters
+st.title("🎯 Portfolio Optimization")
 
-selling = st.checkbox(
-    "Allow Selling Securities",
-    key="allow_selling",
-    value=False,
-)
-
-col_amount, col_percent, col_max_sec = st.columns(3)
-with col_amount:
-    new_investment = st.number_input(
-        "New Investment Amount (€)",
-        key="investment_amount",
-        value=500.0,
-        min_value=0.0,
-        format="%.2f",
-    )
-with col_percent:
-    min_percent = st.number_input(
-        "Minimum Percentage to Invest",
-        key="min_percent",
-        value=0.99,
-        min_value=0.0,
-        max_value=1.0,
-        format="%.2f",
-    )
-with col_max_sec:
-    max_diff_sec = st.number_input(
-        "Maximum number of different securities",
-        key="max_diff_sec",
-        value=3,
-        min_value=0,
-        max_value=1000,
-        format="%i",
+with st.container(border=True):
+    st.subheader("Settings")
+    
+    col_amount, col_percent, col_max_sec = st.columns(3)
+    with col_amount:
+        new_investment = st.number_input(
+            "Investment Amount",
+            key="investment_amount",
+            value=500.0,
+            min_value=0.0,
+            format="%.2f",
+            help="Total amount you want to invest in the portfolio.",
+        )
+    with col_percent:
+        min_percent = st.number_input(
+            "Min Invest %",
+            key="min_percent",
+            value=0.99,
+            min_value=0.0,
+            max_value=1.0,
+            format="%.2f",
+            help="Minimum percentage of the investment amount to allocate.",
+        )
+    with col_max_sec:
+        max_diff_sec = st.number_input(
+            "Max Securities",
+            key="max_diff_sec",
+            value=3,
+            min_value=0,
+            max_value=1000,
+            format="%i",
+            help="Maximum number of different securities to buy.",
+        )
+    
+    selling = st.toggle(
+        "Allow Selling Securities",
+        key="allow_selling",
+        value=False,
+        help="If enabled, the optimizer can suggest selling existing positions to reach equilibrium.",
     )
 
 # List of tickers for buy and sell
