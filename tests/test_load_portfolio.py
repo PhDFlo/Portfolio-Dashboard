@@ -108,7 +108,7 @@ def test_buy_sell_security(page_file, original_dir):
     # Buy 2 shares of NVIDIA Corporation
     at.selectbox(key="ticker_buy_choice").set_value("NVDA").run()
     at.number_input(key="buy_volume").set_value(2).run()
-    at.number_input(key="buy_price").set_value(250.0).run()
+    at.date_input(key="buy_date").set_value("2023-01-01").run()
     at.button(key="buy_button").click().run()
 
     # Check that volumes have been updated
