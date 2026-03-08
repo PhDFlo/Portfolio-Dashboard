@@ -30,7 +30,12 @@ def render_equilibrium_view(
     # Create empty dataframe with proper structure
     equilibrium_df = DataService.equilibrium_to_df(st.session_state.portfolio)
 
-    if st.button("🎯 Run Portfolio Optimization", key="optimize_button", width="stretch", type="primary"):
+    if st.button(
+        "🎯 Run Portfolio Optimization",
+        key="optimize_button",
+        width="stretch",
+        type="primary",
+    ):
         try:
             # Run optimization
             with st.spinner("Optimizing..."):
@@ -67,6 +72,6 @@ def render_equilibrium_view(
                 )
 
     st.divider()
-    
+
     # Re-use portfolio actions
     render_portfolio_actions(ticker_options, file_list)

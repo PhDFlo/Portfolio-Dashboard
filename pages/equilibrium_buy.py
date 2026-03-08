@@ -7,7 +7,7 @@ st.title("🎯 Portfolio Optimization")
 
 with st.container(border=True):
     st.subheader("Settings")
-    
+
     col_amount, col_percent, col_max_sec = st.columns(3)
     with col_amount:
         new_investment = st.number_input(
@@ -38,7 +38,7 @@ with st.container(border=True):
             format="%i",
             help="Maximum number of different securities to buy.",
         )
-    
+
     selling = st.toggle(
         "Allow Selling Securities",
         key="allow_selling",

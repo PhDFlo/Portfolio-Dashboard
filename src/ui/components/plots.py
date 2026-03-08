@@ -75,12 +75,6 @@ def plot_pie_chart(portfolio: Portfolio, ticker_list: list[str]):
         ],
         showlegend=False,
     )
-    # Using relative positioning for annotations or domain coordinates is safer but this matches original roughly
-    # Actually, in make_subplots, domains are calculated.
-    # Let's keep original simpler implementation logic:
-    # y=sum(fig.get_subplot(1, 1).y) / 2 -> this requires accessing subplot y domain.
-    # I'll rely on original logic if possible, or simplified.
-    # Original used: y=sum(fig.get_subplot(1, 1).y) / 2
 
     st.plotly_chart(fig)
 
@@ -92,14 +86,18 @@ def _get_portfolio_history(
     Date: pd.DatetimeIndex,
 ) -> pd.DataFrame:
     # Suppress pandas downcasting warning
-    pd.set_option("future.no_silent_downcasting", True)
+    # pd.set_option("future.no_silent_downcasting", True)
 
     # 1. Standardize all indices to naive daily timestamps to avoid match failures (TZ issues, etc.)
     safe_index = pd.to_datetime(Date).tz_localize(None).normalize()
     hist_tickers = hist_tickers.copy()
-    hist_tickers.index = pd.to_datetime(hist_tickers.index).tz_localize(None).normalize()
+    hist_tickers.index = (
+        pd.to_datetime(hist_tickers.index).tz_localize(None).normalize()
+    )
     # Ensure prices are ffilled to handle gaps
     hist_tickers = hist_tickers.ffill().infer_objects(copy=False)
+
+    print(hist_tickers.tail())  # Debug: Check the processed historical prices
 
     # 2. Initialize composition dataframe
     portfolio_comp = pd.DataFrame(index=safe_index)
@@ -110,8 +108,12 @@ def _get_portfolio_history(
     # 3. Process History: Group by date and ticker to handle multiple events on same day
     history_df = pd.DataFrame(portfolio.history)
     if not history_df.empty:
-        history_df["date"] = pd.to_datetime(history_df["date"]).dt.tz_localize(None).dt.normalize()
-        history_agg = history_df.groupby(["date", "ticker"])["volume"].sum().reset_index()
+        history_df["date"] = (
+            pd.to_datetime(history_df["date"]).dt.tz_localize(None).dt.normalize()
+        )
+        history_agg = (
+            history_df.groupby(["date", "ticker"])["volume"].sum().reset_index()
+        )
 
         for _, row in history_agg.iterrows():
             ticker = row["ticker"]
@@ -154,6 +156,8 @@ def _get_portfolio_history(
             price = hist_tickers[ticker]
             for ohlc in ["Open", "High", "Low", "Close"]:
                 portfolio_comp[ohlc] += vol * price
+
+    print(portfolio_comp.tail())  # Debug: Check the computed portfolio composition
 
     return portfolio_comp
 
