@@ -1,4 +1,5 @@
 import streamlit as st
+from datetime import date
 from foliotrack.services.MarketService import MarketService
 from foliotrack.storage.PortfolioRepository import PortfolioRepository
 from src.config import PORTFOLIOS_DIR
@@ -16,19 +17,22 @@ def render_portfolio_actions(ticker_options: list, file_list: list):
 
     # Buy security
     with col_buy:
-        st.subheader("Buy Security")
-        _render_buy_box(ticker_options)
+        with st.container(border=True):
+            st.subheader("📥 Buy Security")
+            _render_buy_box(ticker_options)
 
     # Sell security
     with col_sell:
-        st.subheader("Sell Security")
-        _render_sell_box(ticker_options)
+        with st.container(border=True):
+            st.subheader("📤 Sell Security")
+            _render_sell_box(ticker_options)
 
     # Save portfolio section
-    st.subheader("Save Portfolio")
-    col_save, _ = st.columns(2)
-    with col_save:
-        _render_save_box(file_list)
+    with st.container(border=True):
+        st.subheader("💾 Save & Persistence")
+        col_save, _ = st.columns(2)
+        with col_save:
+            _render_save_box(file_list)
 
 
 def _render_buy_box(ticker_options):
@@ -44,7 +48,6 @@ def _render_buy_box(ticker_options):
 
         # Set default currency and value based on selected ticker
         default_currency = st.session_state.portfolio.currency
-        default_buy_price = 0.0
         if (
             len(st.session_state.portfolio.securities) != 0
             and ticker_input_buy in st.session_state.portfolio.securities
@@ -52,12 +55,9 @@ def _render_buy_box(ticker_options):
             default_currency = st.session_state.portfolio.securities[
                 ticker_input_buy
             ].currency
-            default_buy_price = st.session_state.portfolio.securities[
-                ticker_input_buy
-            ].price_in_security_currency
 
         volume_buy = st.number_input(
-            "Volume to Buy",
+            "Volume",
             key="buy_volume",
             value=1.0,
             min_value=0.0,
@@ -70,12 +70,11 @@ def _render_buy_box(ticker_options):
             "Security Currency", key="buy_currency", value=default_currency
         )
 
-        buy_price = st.number_input(
-            "Unit Price",
-            key="buy_price",
-            value=default_buy_price,
-            min_value=0.0,
-            format="%.2f",
+        buy_date = st.date_input(
+            "Date (YYYY-MM-DD)",
+            value=date.today(),
+            key="buy_date",
+            format="YYYY-MM-DD",
         )
 
     if st.button("📥 Buy Security", key="buy_button", width="stretch"):
@@ -83,11 +82,11 @@ def _render_buy_box(ticker_options):
             st.session_state.portfolio.buy_security(
                 ticker=ticker_input_buy,
                 volume=volume_buy,
-                price=buy_price,
+                date=buy_date.strftime("%Y-%m-%d"),
                 currency=currency,
             )
             st.success(
-                f"Bought {volume_buy} unit(s) of {ticker_input_buy} at {buy_price}"
+                f"Bought {volume_buy} unit(s) of {ticker_input_buy} on {buy_date}"
             )
 
             # Call update_prices to fetch name and price
@@ -99,27 +98,39 @@ def _render_buy_box(ticker_options):
 
 
 def _render_sell_box(ticker_options):
-    tickers = st.selectbox(
-        "Security ticker to sell",
-        options=ticker_options,
-        key="ticker_sell_choice",
-        index=1 if len(ticker_options) > 1 else 0,
-        accept_new_options=True,
-    )
-    volumes = st.number_input(
-        "Volume to Sell",
-        key="sell_volume",
-        value=1.0,
-        min_value=0.0,
-        format="%.1f",
-        step=1.0,
-    )
+
+    sell_col1, sell_col2 = st.columns(2)
+    with sell_col1:
+        tickers = st.selectbox(
+            "Security ticker",
+            options=ticker_options,
+            key="ticker_sell_choice",
+            index=1 if len(ticker_options) > 1 else 0,
+            accept_new_options=True,
+        )
+        volumes = st.number_input(
+            "Volume",
+            key="sell_volume",
+            value=1.0,
+            min_value=0.0,
+            format="%.1f",
+            step=1.0,
+        )
+
+    with sell_col2:
+        sell_date = st.date_input(
+            "Date (YYYY-MM-DD)",
+            value=date.today(),
+            key="sell_date",
+            format="YYYY-MM-DD",
+        )
 
     if st.button("📤 Sell Security", key="sell_button", width="stretch"):
         try:
             st.session_state.portfolio.sell_security(
                 ticker=tickers,
                 volume=volumes,
+                date=sell_date.strftime("%Y-%m-%d"),
             )
             st.success(f"Sold {volumes} unit(s) of {tickers}")
             st.rerun()  # Global rerun to update table

@@ -28,24 +28,24 @@ def render_equilibrium_view(
     """Renders the equilibrium optimization view"""
 
     # Create empty dataframe with proper structure
-    if st.session_state.portfolio.securities:
-        equilibrium_df = DataService.equilibrium_to_df(st.session_state.portfolio)
-    else:
-        # Fallback empty df
-        equilibrium_df = DataService.equilibrium_to_df(
-            st.session_state.portfolio
-        )  # DataService handles empty
+    equilibrium_df = DataService.equilibrium_to_df(st.session_state.portfolio)
 
-    if st.button("🎯 Optimize Portfolio", key="optimize_button", width="stretch"):
+    if st.button(
+        "🎯 Run Portfolio Optimization",
+        key="optimize_button",
+        width="stretch",
+        type="primary",
+    ):
         try:
             # Run optimization
-            _, st.session_state.total_to_invest, _ = optimizer.solve_equilibrium(
-                st.session_state.portfolio,
-                investment_amount=float(new_investment),
-                min_percent_to_invest=float(min_percent),
-                max_different_securities=int(max_diff_sec),
-                selling=bool(selling),
-            )
+            with st.spinner("Optimizing..."):
+                _, st.session_state.total_to_invest, _ = optimizer.solve_equilibrium(
+                    st.session_state.portfolio,
+                    investment_amount=float(new_investment),
+                    min_percent_to_invest=float(min_percent),
+                    max_different_securities=int(max_diff_sec),
+                    selling=bool(selling),
+                )
 
             st.session_state.optim_ran = True
             st.rerun(scope="fragment")
@@ -56,18 +56,22 @@ def render_equilibrium_view(
             else:
                 st.error(f"Error during optimization: {str(e)}")
 
-    if "optim_ran" in st.session_state:
-        st.dataframe(
-            equilibrium_df,
-            width="stretch",
-            column_config=EQ_DATA_CONFIG,
-        )
-
-        # Display Total to invest if available
-        if hasattr(st.session_state, "total_to_invest"):
-            st.write(
-                f"Total to Invest: {st.session_state.total_to_invest:.2f} {st.session_state.portfolio.symbol}"
+    if st.session_state.get("optim_ran"):
+        st.subheader("Optimization Results")
+        with st.container(border=True):
+            st.dataframe(
+                equilibrium_df,
+                width="stretch",
+                column_config=EQ_DATA_CONFIG,
             )
+
+            # Display Total to invest if available
+            if hasattr(st.session_state, "total_to_invest"):
+                st.info(
+                    f"**Total to Invest:** {st.session_state.total_to_invest:,.2f} {st.session_state.portfolio.symbol}"
+                )
+
+    st.divider()
 
     # Re-use portfolio actions
     render_portfolio_actions(ticker_options, file_list)

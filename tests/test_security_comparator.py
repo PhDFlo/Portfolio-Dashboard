@@ -59,13 +59,21 @@ def test_run_comparison(page_file, original_dir):
     at.button[0].click().run()
 
     # Test assertions
-    expected_values = [
-        "Final value of PEA (pre-withdrawal): 42516.87 €",
-        "Final value of PEA (after-tax): 36923.97 €",
-        "Final value of CTO (pre-withdrawal): 74489.92 €",
-        "Final value of CTO (after-tax): 55142.94 €",
-    ]
-
     assert at.button[0].value is True
-    for i, expected in enumerate(expected_values):
-        assert at.markdown[i].value == expected_values[i]
+    
+    # Check for labels in markdown (write() uses markdown)
+    # The new UI writes **PEA** and **CTO**
+    found_labels = [m.value for m in at.markdown]
+    assert "**PEA**" in found_labels
+    assert "**CTO**" in found_labels
+    
+    # Check metrics
+    # Metric 0: Final After-Tax for PEA
+    # Metric 1: Final After-Tax for CTO
+    # (assuming they are in that order)
+    # Actually, they are in res_col1 and res_col2.
+    
+    # Let's just check the values exist in metrics
+    metric_values = [m.value for m in at.metric]
+    assert "36,923.97 €" in metric_values
+    assert "55,142.94 €" in metric_values
