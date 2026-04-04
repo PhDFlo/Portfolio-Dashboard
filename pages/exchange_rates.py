@@ -64,19 +64,24 @@ if st.button("⚖️ Calculate Exchange Rate", width="stretch"):
             st.subheader("Results")
             with st.container(border=True):
                 res_col1, res_col2 = st.columns(2)
-                
+
                 if isinstance(result, dict):
                     rate = result.get("rate", 0.0)
                     converted = result.get("converted", 0.0)
                 else:
                     rate = float(result)
                     converted = rate * amount
-                
+
                 with res_col1:
-                    st.metric(f"Rate ({from_currency_code} → {to_currency_code})", f"{rate:.4f}")
+                    st.metric(
+                        f"Rate ({from_currency_code} → {to_currency_code})",
+                        f"{rate:.4f}",
+                    )
                 with res_col2:
-                    st.metric(f"Converted Amount ({to_currency_code})", f"{converted:,.2f}")
-                
+                    st.metric(
+                        f"Converted Amount ({to_currency_code})", f"{converted:,.2f}"
+                    )
+
             if isinstance(result, dict):
                 with st.expander("See raw response data"):
                     st.write(result)

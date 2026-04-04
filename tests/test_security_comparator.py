@@ -60,19 +60,19 @@ def test_run_comparison(page_file, original_dir):
 
     # Test assertions
     assert at.button[0].value is True
-    
+
     # Check for labels in markdown (write() uses markdown)
     # The new UI writes **PEA** and **CTO**
     found_labels = [m.value for m in at.markdown]
     assert "**PEA**" in found_labels
     assert "**CTO**" in found_labels
-    
+
     # Check metrics
     # Metric 0: Final After-Tax for PEA
     # Metric 1: Final After-Tax for CTO
     # (assuming they are in that order)
     # Actually, they are in res_col1 and res_col2.
-    
+
     # Let's just check the values exist in metrics
     metric_values = [m.value for m in at.metric]
     assert "36,923.97 €" in metric_values
