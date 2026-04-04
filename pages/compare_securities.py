@@ -99,14 +99,14 @@ if st.button("🚀 Run Comparison", width="stretch"):
     st.session_state["comparison_results"] = {
         "labels": labels,
         "pre_tax": [s[-1] for s in series_list],
-        "after_tax": [a[-1] for a in after_tax_curves]
+        "after_tax": [a[-1] for a in after_tax_curves],
     }
 
 # Results Display
 if "comparison_results" in st.session_state:
     results = st.session_state["comparison_results"]
     st.subheader("Final Values (at end of period)")
-    
+
     with st.container(border=True):
         res_col1, res_col2 = st.columns(2)
         for i, label in enumerate(results["labels"]):
@@ -117,6 +117,4 @@ if "comparison_results" in st.session_state:
 
 if "comparison_plot" in st.session_state:
     with st.container(border=True):
-        st.plotly_chart(
-            st.session_state["comparison_plot"], use_container_width=True
-        )
+        st.plotly_chart(st.session_state["comparison_plot"], use_container_width=True)
