@@ -97,8 +97,6 @@ def _get_portfolio_history(
     # Ensure prices are ffilled to handle gaps
     hist_tickers = hist_tickers.ffill().infer_objects(copy=False)
 
-    print(hist_tickers.tail())  # Debug: Check the processed historical prices
-
     # 2. Initialize composition dataframe
     portfolio_comp = pd.DataFrame(index=safe_index)
     for t in ticker_list:
@@ -156,8 +154,6 @@ def _get_portfolio_history(
             price = hist_tickers[ticker]
             for ohlc in ["Open", "High", "Low", "Close"]:
                 portfolio_comp[ohlc] += vol * price
-
-    print(portfolio_comp.tail())  # Debug: Check the computed portfolio composition
 
     return portfolio_comp
 

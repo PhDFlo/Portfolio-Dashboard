@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
+from foliotrack.services.MarketService import MarketService
 from src.ui.components.sidebar import render_sidebar
 from src.ui.components.plots import plot_pie_chart, plot_portfolio_evolution
-from src.services.market_service import MarketService
 
 # Initialize services
 market_service = MarketService()
@@ -63,8 +63,8 @@ if ticker_list:
 
                 # Get historical data for all tickers in portfolio
                 with st.spinner("Fetching historical data..."):
-                    hist_tickers = market_service.get_security_historical_data(
-                        ticker_list, start_date=start_date
+                    hist_tickers = market_service.get_historical_data(
+                        ticker_list, start_date=start_date, end_date="2026-04-04"
                     )
 
                 if not hist_tickers.empty:
@@ -79,10 +79,16 @@ if ticker_list:
                 else:
                     st.info("No historical data available for these tickers.")
             else:
-                st.info("No history available for this portfolio. Add some transactions to see evolution.")
+                st.info(
+                    "No history available for this portfolio. Add some transactions to see evolution."
+                )
 
     with col_pie:
         with st.container(border=True):
-            plot_pie_chart(portfolio=st.session_state.portfolio, ticker_list=ticker_list)
+            plot_pie_chart(
+                portfolio=st.session_state.portfolio, ticker_list=ticker_list
+            )
 else:
-    st.info("Your portfolio is currently empty. Go to 'Portfolio & Update Prices' to load or add securities.")
+    st.info(
+        "Your portfolio is currently empty. Go to 'Portfolio & Update Prices' to load or add securities."
+    )
