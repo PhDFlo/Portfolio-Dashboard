@@ -85,8 +85,6 @@ def _get_portfolio_history(
     hist_tickers: pd.DataFrame,
     Date: pd.DatetimeIndex,
 ) -> pd.DataFrame:
-    # Suppress pandas downcasting warning
-    # pd.set_option("future.no_silent_downcasting", True)
 
     # 1. Standardize all indices to naive daily timestamps to avoid match failures (TZ issues, etc.)
     safe_index = pd.to_datetime(Date).tz_localize(None).normalize()
@@ -94,8 +92,6 @@ def _get_portfolio_history(
     hist_tickers.index = (
         pd.to_datetime(hist_tickers.index).tz_localize(None).normalize()
     )
-    # Ensure prices are ffilled to handle gaps
-    hist_tickers = hist_tickers.ffill().infer_objects(copy=False)
 
     # 2. Initialize composition dataframe
     portfolio_comp = pd.DataFrame(index=safe_index)
