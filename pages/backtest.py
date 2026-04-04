@@ -1,6 +1,6 @@
 import streamlit as st
 from datetime import date
-from foliotrack.services import MarketService
+from foliotrack.services.MarketService import MarketService
 from src.ui.components.sidebar import render_sidebar
 from src.ui.fragments.backtest_view import render_backtest_view
 
