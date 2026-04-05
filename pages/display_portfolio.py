@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
 from foliotrack.services.MarketService import MarketService
-from src.ui.components.sidebar import render_sidebar
-from src.ui.components.plots import plot_pie_chart, plot_portfolio_evolution
+from utils.sidebar import render_sidebar
+from utils.plots import plot_pie_chart, plot_portfolio_evolution
 
 # Initialize services
 market_service = MarketService()

@@ -1,6 +1,8 @@
 import streamlit as st
-from src.ui.fragments.equilibrium_view import render_equilibrium_view
-from src.services.portfolio_service import PortfolioService
+from foliotrack.services.OptimizationService import OptimizationService
+from utils.formatting import equilibrium_to_df
+from utils.portfolio_actions import render_portfolio_actions
+from utils.file_helpers import get_portfolio_filenames
 
 # Optimization Parameters
 st.title("🎯 Portfolio Optimization")
@@ -48,8 +50,6 @@ with st.container(border=True):
 
 # List of tickers for buy and sell
 if "ticker_options" not in st.session_state:
-    # This might be populated by load_portfolio page, but if starting here directly
-    # we need to populate generic ones or from current portfolio
     if "portfolio" in st.session_state:
         st.session_state.ticker_options = [""] + list(
             st.session_state.portfolio.securities.keys()
@@ -58,19 +58,64 @@ if "ticker_options" not in st.session_state:
         st.session_state.ticker_options = [""]
 
 # Retrieve file list for saving
-# This is a bit disjointed now as file_list was coming from sidebar in load_portfolio.
-# We should probably initialize file_list in app.py or re-fetch it here.
+file_list = [""] + get_portfolio_filenames()
 
-portfolio_service = PortfolioService()
-file_list = [""] + portfolio_service.get_portfolio_filenames()
+# Equilibrium View Block
 
+EQ_DATA_CONFIG = {
+    "Name": st.column_config.TextColumn("Name"),
+    "Ticker": st.column_config.TextColumn("Ticker"),
+    "Currency": st.column_config.TextColumn("Currency"),
+    "Price": st.column_config.NumberColumn("Price", format="%.4f"),
+    "Target Share": st.column_config.NumberColumn("Target Share", format="%.4f"),
+    "Actual Share": st.column_config.NumberColumn("Actual Share", format="%.4f"),
+    "Final Share": st.column_config.NumberColumn("Final Share", format="%.4f"),
+    "Amount to Invest": st.column_config.NumberColumn(
+        "Amount to Invest", format="%.2f"
+    ),
+    "Volume to buy": st.column_config.NumberColumn("Volume to buy", format="%.0f"),
+}
 
-# Optimization button and results
-render_equilibrium_view(
-    new_investment,
-    min_percent,
-    max_diff_sec,
-    selling,
-    st.session_state.ticker_options,
-    file_list,
-)
+if st.button(
+    "🎯 Run Portfolio Optimization",
+    key="optimize_button",
+    width="stretch",
+    type="primary",
+):
+    try:
+        # Run optimization
+        optimizer = OptimizationService()
+        with st.spinner("Optimizing..."):
+            _, st.session_state.total_to_invest, _ = optimizer.solve_equilibrium(
+                st.session_state.portfolio,
+                investment_amount=float(new_investment),
+                min_percent_to_invest=float(min_percent),
+                max_different_securities=int(max_diff_sec),
+                selling=bool(selling),
+            )
+
+        st.session_state.optim_ran = True
+    except Exception as e:
+        st.error(f"Error during optimization: {str(e)}")
+
+equilibrium_df = equilibrium_to_df(st.session_state.portfolio)
+
+if st.session_state.get("optim_ran"):
+    st.subheader("Optimization Results")
+    with st.container(border=True):
+        st.dataframe(
+            equilibrium_df,
+            width="stretch",
+            column_config=EQ_DATA_CONFIG,
+        )
+
+        # Display Total to invest if available
+        if hasattr(st.session_state, "total_to_invest"):
+            st.info(
+                f"**Total to Invest:** {st.session_state.total_to_invest:,.2f} {st.session_state.portfolio.symbol}"
+            )
+
+st.divider()
+
+# Re-use portfolio actions
+render_portfolio_actions(st.session_state.ticker_options, file_list)

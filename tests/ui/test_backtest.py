@@ -5,7 +5,7 @@ import pytest
 from streamlit.testing.v1.app_test import AppTest
 
 # Add the parent directory to sys.path to make imports work
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 
 @pytest.fixture
@@ -16,7 +16,7 @@ def page_file():
 @pytest.fixture
 def original_dir():
     original = os.getcwd()
-    os.chdir(str(Path(__file__).parent.parent))
+    os.chdir(str(Path(__file__).parent.parent.parent))
     yield original
     os.chdir(original)
 

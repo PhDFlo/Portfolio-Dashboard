@@ -3,8 +3,8 @@ import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
 
-from src.services.simulation_service import SimulationService
-from src.ui.components.contract_form import create_contract_form
+from utils.simulation import simulate_contract, compute_after_tax_curve
+from utils.contract_form import create_contract_form
 
 plotly_colors = px.colors.qualitative.Plotly
 
@@ -54,8 +54,8 @@ if st.button("🚀 Run Comparison", width="stretch"):
     after_tax_curves = []
     labels = []
     for contract in contracts:
-        series, invested = SimulationService.simulate_contract(contract)
-        after_tax_curve = SimulationService.compute_after_tax_curve(
+        series, invested = simulate_contract(contract)
+        after_tax_curve = compute_after_tax_curve(
             series, invested, contract["capgains_tax"]
         )
         series_list.append(series)

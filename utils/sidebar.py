@@ -1,9 +1,8 @@
 import streamlit as st
 from foliotrack.storage.PortfolioRepository import PortfolioRepository
-from src.config import PORTFOLIOS_DIR
-from src.services.portfolio_service import PortfolioService
+from utils.config import PORTFOLIOS_DIR
+from utils.file_helpers import get_portfolio_filenames, load_portfolio
 
-portfolio_service = PortfolioService()
 repo = PortfolioRepository()
 
 
@@ -13,7 +12,7 @@ def render_sidebar(key="portfolio_file_select") -> list:
         st.header("Portfolio Files")
 
         # File selection
-        portfolio_files = portfolio_service.get_portfolio_filenames()
+        portfolio_files = get_portfolio_filenames()
         # Add empty option
         file_list = [""] + portfolio_files
 

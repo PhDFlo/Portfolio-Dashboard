@@ -5,7 +5,7 @@ import pytest
 from streamlit.testing.v1.app_test import AppTest
 
 # Add the parent directory to sys.path to make imports work
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 
 @pytest.fixture
@@ -18,7 +18,7 @@ def original_dir():
     # Store original directory
     original = os.getcwd()
     # Change to the directory containing app.py for proper path resolution
-    os.chdir(str(Path(__file__).parent.parent))
+    os.chdir(str(Path(__file__).parent.parent.parent))
     yield original
     # Restore the original directory after test
     os.chdir(original)
