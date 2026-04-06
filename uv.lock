@@ -551,7 +551,7 @@ wheels = [
 
 [[package]]
 name = "foliotrack"
-version = "0.0.9"
+version = "0.0.10"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "bt" },
@@ -564,9 +564,9 @@ dependencies = [
     { name = "pytest" },
     { name = "yfinance" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/29/6a/179e03e0d94fc3584131da811053999ef8410d83e7513ce18aff708a22ef/foliotrack-0.0.9.tar.gz", hash = "sha256:3c5f59da1bccff28f6e2a2e1ebd320ee611f3b0e992f4fc643a06417710bacf0", size = 25385, upload-time = "2026-04-04T18:02:05.346Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b3/bc/b538d8c05f429f5bc6a41edcbfa4c247b05bedd24559d0a1a03d8f2ab2f2/foliotrack-0.0.10.tar.gz", hash = "sha256:8834a5444c944d238d76b154198d674153aebb6c26b9e6916d438c53172c4194", size = 25469, upload-time = "2026-04-05T16:09:29.501Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c4/e0/fa5284e91bd28f1c41d7567188131ec04955ed148faa86e45c51a4335069/foliotrack-0.0.9-py3-none-any.whl", hash = "sha256:17dc2d13533a4e4932dac1a5f5807a341d10a1eb7fa85f446380f71526d76185", size = 28117, upload-time = "2026-04-04T18:02:04.197Z" },
+    { url = "https://files.pythonhosted.org/packages/32/88/315091187a7641b2730f1e426c99a91390a0ef889c552d4df73f9eda4f1e/foliotrack-0.0.10-py3-none-any.whl", hash = "sha256:1efe620e1eee445380ac8b3f1ef5a6dfaa90278e8997613c14a791b82642db9f", size = 28194, upload-time = "2026-04-05T16:09:30.595Z" },
 ]
 
 [[package]]
