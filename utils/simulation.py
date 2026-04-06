@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def simulate_contract(contract) -> tuple:
     """
     Simulate yearly portfolio value after applying gross return, Security fee and bank fee.
@@ -24,6 +25,7 @@ def simulate_contract(contract) -> tuple:
         # Store value at this year
         values[y] = val
     return values, invested
+
 
 def compute_after_tax_curve(values, invested, capital_gains_tax) -> np.ndarray:
     """

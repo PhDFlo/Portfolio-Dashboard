@@ -1,6 +1,7 @@
 import pandas as pd
 from foliotrack.domain.Portfolio import Portfolio
 
+
 def portfolio_to_df(portfolio: Portfolio) -> pd.DataFrame:
     """Convert portfolio info to DataFrame format for display"""
     info = portfolio.get_portfolio_info()
@@ -34,6 +35,7 @@ def portfolio_to_df(portfolio: Portfolio) -> pd.DataFrame:
         )
 
     return pd.DataFrame(data)
+
 
 def equilibrium_to_df(portfolio: Portfolio) -> pd.DataFrame:
     """Convert portfolio info to DataFrame format for display (Equilibrium view)"""

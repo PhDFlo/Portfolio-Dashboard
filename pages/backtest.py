@@ -38,7 +38,10 @@ if "portfolio" in st.session_state:
             with st.spinner("Running backtest..."):
                 backtest_service = BacktestService()
                 result = backtest_service.run_backtest(
-                    st.session_state.portfolio, market_service, start_date=begin_date, end_date=end_date
+                    st.session_state.portfolio,
+                    market_service,
+                    start_date=begin_date,
+                    end_date=end_date,
                 )
 
             # --- 1. Equity Curve ---
@@ -107,7 +110,7 @@ if "portfolio" in st.session_state:
                     df_filtered = hist_data.loc[begin_date:end_date]
                 else:
                     df_filtered = pd.DataFrame()
-                    
+
                 if isinstance(df_filtered.columns, pd.MultiIndex):
                     close_prices = df_filtered["Close"]
                 else:
