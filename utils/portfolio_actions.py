@@ -1,13 +1,11 @@
 import streamlit as st
 from datetime import date
 from foliotrack.services.MarketService import MarketService
-from foliotrack.storage.PortfolioRepository import PortfolioRepository
-from src.config import PORTFOLIOS_DIR
+from utils.file_helpers import save_portfolio
+from utils.config import PORTFOLIOS_DIR
 
 # Initialize services
 market_service = MarketService()
-repo = PortfolioRepository()
-
 
 @st.fragment
 def render_portfolio_actions(ticker_options: list, file_list: list):
@@ -35,7 +33,13 @@ def render_portfolio_actions(ticker_options: list, file_list: list):
             _render_save_box(file_list)
 
 
-def _render_buy_box(ticker_options):
+def _render_buy_box(ticker_options: list):
+    """
+    Renders the UI elements and logic for buying a security.
+
+    Args:
+        ticker_options (list): A list of available tickers to select from.
+    """
     col1, col2 = st.columns(2)
     with col1:
         ticker_input_buy = st.selectbox(
@@ -97,8 +101,13 @@ def _render_buy_box(ticker_options):
             st.error(f"Error buying security: {str(e)}")
 
 
-def _render_sell_box(ticker_options):
+def _render_sell_box(ticker_options: list):
+    """
+    Renders the UI elements and logic for selling an existing security.
 
+    Args:
+        ticker_options (list): A list of available tickers to select from.
+    """
     sell_col1, sell_col2 = st.columns(2)
     with sell_col1:
         tickers = st.selectbox(
@@ -138,7 +147,13 @@ def _render_sell_box(ticker_options):
             st.error(f"Error selling security: {str(e)}")
 
 
-def _render_save_box(file_list):
+def _render_save_box(file_list: list):
+    """
+    Renders the UI elements and logic for saving the current portfolio to a JSON file.
+
+    Args:
+        file_list (list): A list of existing file names in the Portfolios directory.
+    """
     save_filename = st.selectbox(
         "Save as filename",
         options=file_list,
@@ -149,9 +164,7 @@ def _render_save_box(file_list):
 
     if st.button("💾 Save Portfolio", key="save_button", width="stretch"):
         try:
-            repo.save_to_json(
-                st.session_state.portfolio, PORTFOLIOS_DIR / save_filename
-            )
+            save_portfolio(st.session_state.portfolio, save_filename)
             st.success(f"Portfolio saved to {PORTFOLIOS_DIR / save_filename}")
         except Exception as e:
             st.error(str(e))

@@ -6,7 +6,7 @@ from streamlit.testing.v1.app_test import AppTest
 import sys
 
 # Add project root to sys.path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 # Add parent directory to sys.path is done in other tests by changing cwd
 
@@ -19,7 +19,7 @@ def page_file():
 @pytest.fixture
 def original_dir():
     original = os.getcwd()
-    os.chdir(str(Path(__file__).parent.parent))
+    os.chdir(str(Path(__file__).parent.parent.parent))
     yield original
     os.chdir(original)
 
