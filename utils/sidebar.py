@@ -1,7 +1,7 @@
 import streamlit as st
 from foliotrack.storage.PortfolioRepository import PortfolioRepository
 from utils.config import PORTFOLIOS_DIR
-from utils.file_helpers import get_portfolio_filenames, load_portfolio
+from utils.file_helpers import get_portfolio_filenames
 
 repo = PortfolioRepository()
 

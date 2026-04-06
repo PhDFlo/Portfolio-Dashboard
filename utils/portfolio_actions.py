@@ -7,6 +7,7 @@ from utils.config import PORTFOLIOS_DIR
 # Initialize services
 market_service = MarketService()
 
+
 @st.fragment
 def render_portfolio_actions(ticker_options: list, file_list: list):
     """Renders the Buy, Sell and Save actions as a fragment"""

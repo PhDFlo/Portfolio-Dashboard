@@ -32,7 +32,7 @@ LOAD_DATA_CONFIG = {
 
 with st.container(border=True):
     st.subheader("Holdings")
-    
+
     # Portfolio table block (inlined)
     if "portfolio" not in st.session_state:
         st.error("No portfolio loaded.")
@@ -46,7 +46,9 @@ with st.container(border=True):
             key="portfolio_editor",
         )
 
-        if st.button("💰 Update Securities Price", key="update_securities_price", width="stretch"):
+        if st.button(
+            "💰 Update Securities Price", key="update_securities_price", width="stretch"
+        ):
             try:
                 with st.spinner("Updating prices..."):
                     market_service = MarketService()

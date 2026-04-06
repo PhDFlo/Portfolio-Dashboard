@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 from foliotrack.domain.Portfolio import Portfolio
 from utils.formatting import portfolio_to_df, equilibrium_to_df
 
+
 def test_portfolio_to_df_empty():
     """
     Tests the `portfolio_to_df` function with an empty portfolio.
@@ -10,15 +11,16 @@ def test_portfolio_to_df_empty():
     """
     mock_portfolio = MagicMock(spec=Portfolio)
     mock_portfolio.get_portfolio_info.return_value = []
-    
+
     df = portfolio_to_df(mock_portfolio)
-    
+
     # Assert
     assert isinstance(df, pd.DataFrame)
     assert len(df) == 1
     assert df["Name"].iloc[0] == ""
     assert df["Currency"].iloc[0] == "EUR"
     assert df["Price"].iloc[0] == 0.0
+
 
 def test_portfolio_to_df_populated():
     """
@@ -36,12 +38,12 @@ def test_portfolio_to_df_populated():
             "target_share": 0.5,
             "value": 1500.0,
             "symbol": "$",
-            "volume": 10
+            "volume": 10,
         }
     ]
-    
+
     df = portfolio_to_df(mock_portfolio)
-    
+
     # Assert
     assert isinstance(df, pd.DataFrame)
     assert len(df) == 1
@@ -50,15 +52,17 @@ def test_portfolio_to_df_populated():
     assert df["Total value"].iloc[0] == "1500.0$"
     assert df["Volume"].iloc[0] == 10
 
+
 def test_equilibrium_to_df_empty():
     mock_portfolio = MagicMock(spec=Portfolio)
     mock_portfolio.get_portfolio_info.return_value = []
-    
+
     df = equilibrium_to_df(mock_portfolio)
-    
+
     assert isinstance(df, pd.DataFrame)
     assert len(df) == 1
     assert df["Amount to Invest"].iloc[0] == 0.0
+
 
 def test_equilibrium_to_df_populated():
     mock_portfolio = MagicMock(spec=Portfolio)
@@ -72,12 +76,12 @@ def test_equilibrium_to_df_populated():
             "actual_share": 0.3,
             "final_share": 0.4,
             "amount_to_invest": 1500.0,
-            "volume_to_buy": 5
+            "volume_to_buy": 5,
         }
     ]
-    
+
     df = equilibrium_to_df(mock_portfolio)
-    
+
     assert len(df) == 1
     assert df["Name"].iloc[0] == "Microsoft"
     assert df["Amount to Invest"].iloc[0] == 1500.0
